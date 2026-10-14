@@ -12,6 +12,6 @@ public interface CursoRepository extends JpaRepository<Curso, Long> {
 
 	List<Curso> findByAutorStartingWithIgnoreCase(String autor);
 
-	List<Curso> findByNivelStartingWithIgnoreCase(String nivel);
+	List<Curso> findByNivelNombreStartingWithIgnoreCase(String nivel);
 
 }

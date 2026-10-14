@@ -6,23 +6,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.arquitecturajava.negocio.Curso;
+import com.arquitecturajava.negocio.CursoNivel;
+import com.arquitecturajava.persistencia.CursoNivelRepository;
 import com.arquitecturajava.persistencia.CursoRepository;
 
 @Service
 @Transactional
 public class CursoService {
 
-	private static final List<String> NIVELES = List.of("Básico", "Intermedio", "Avanzado");
 	private static final List<String> CAMPOS_BUSQUEDA = List.of("titulo", "autor", "nivel");
 
 	private final CursoRepository cursoRepository;
+	private final CursoNivelRepository cursoNivelRepository;
 
-	public CursoService(CursoRepository cursoRepository) {
+	public CursoService(CursoRepository cursoRepository, CursoNivelRepository cursoNivelRepository) {
 		this.cursoRepository = cursoRepository;
+		this.cursoNivelRepository = cursoNivelRepository;
 	}
 
-	public List<String> getNiveles() {
-		return NIVELES;
+	@Transactional(readOnly = true)
+	public List<CursoNivel> getNiveles() {
+		return cursoNivelRepository.findAllByOrderByOrdenAsc();
 	}
 
 	@Transactional(readOnly = true)
@@ -43,7 +47,7 @@ public class CursoService {
 		return switch (campo) {
 		case "titulo" -> cursoRepository.findByTituloStartingWithIgnoreCase(prefijo);
 		case "autor" -> cursoRepository.findByAutorStartingWithIgnoreCase(prefijo);
-		case "nivel" -> cursoRepository.findByNivelStartingWithIgnoreCase(prefijo);
+		case "nivel" -> cursoRepository.findByNivelNombreStartingWithIgnoreCase(prefijo);
 		default -> throw new IllegalArgumentException("Campo de búsqueda no válido: " + campo);
 		};
 	}

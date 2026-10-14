@@ -31,10 +31,10 @@
 								<div class="invalid-feedback" th:if="${#fields.hasErrors('duracion')}" th:errors="*{duracion}">Error</div>
 							</div>
 							<div class="mb-4">
-								<label class="form-label" for="nivel">Nivel</label>
-								<select class="form-select" th:field="*{nivel}" required>
+								<label class="form-label" for="idNivel">Nivel</label>
+								<select class="form-select" th:field="*{idNivel}" required>
 									<option value="">-- Selecciona --</option>
-									<option th:each="n : ${niveles}" th:value="${n}" th:text="${n}">Básico</option>
+									<option th:each="n : ${niveles}" th:value="${n.id}" th:text="${n.nombre}">Básico</option>
 								</select>
 							</div>
 							<div class="d-flex gap-2">

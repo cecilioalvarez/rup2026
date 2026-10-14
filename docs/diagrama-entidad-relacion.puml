@@ -1,0 +1,48 @@
+@startuml diagrama-entidad-relacion
+title Diagrama entidad-relación - applicacion (H2)
+
+skinparam linetype ortho
+hide circle
+hide empty members
+
+' Esquema generado por Hibernate a partir de las entidades CursoNivel, Curso e Imparticion
+
+entity "curso_nivel" as curso_nivel {
+  * id : BIGINT <<PK>> <<IDENTITY>>
+  --
+  nombre : VARCHAR(255)
+  * orden : INTEGER
+}
+
+entity "curso" as curso {
+  * id : BIGINT <<PK>> <<IDENTITY>>
+  --
+  titulo : VARCHAR(255)
+  autor : VARCHAR(255)
+  * duracion : INTEGER {<= 200}
+  id_nivel : BIGINT <<FK>>
+}
+
+entity "imparticion" as imparticion {
+  * id : BIGINT <<PK>> <<IDENTITY>>
+  --
+  nombre : VARCHAR(255)
+  fecha_inicio : DATE
+  fecha_fin : DATE
+  curso_id : BIGINT <<FK>>
+}
+
+curso_nivel ||--o{ curso : "id_nivel → id"
+curso ||--o{ imparticion : "curso_id → id"
+
+note bottom of imparticion
+  El borrado en cascada (CascadeType.REMOVE)
+  lo aplica JPA, no la base de datos:
+  la FK no tiene ON DELETE CASCADE.
+end note
+
+legend right
+  * = NOT NULL
+end legend
+
+@enduml

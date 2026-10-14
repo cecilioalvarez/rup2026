@@ -9,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Max;
 
@@ -22,7 +24,9 @@ public class Curso {
 	private String autor;
 	@Max(value = 200, message = "La duración no puede superar las 200 horas")
 	private int duracion;
-	private String nivel;
+	@ManyToOne
+	@JoinColumn(name = "id_nivel")
+	private CursoNivel nivel;
 
 	@OneToMany(mappedBy = "curso", cascade = CascadeType.REMOVE)
 	private List<Imparticion> imparticiones = new ArrayList<>();
@@ -30,7 +34,7 @@ public class Curso {
 	public Curso() {
 	}
 
-	public Curso(Long id, String titulo, String autor, int duracion, String nivel) {
+	public Curso(Long id, String titulo, String autor, int duracion, CursoNivel nivel) {
 		this.id = id;
 		this.titulo = titulo;
 		this.autor = autor;
@@ -70,11 +74,11 @@ public class Curso {
 		this.duracion = duracion;
 	}
 
-	public String getNivel() {
+	public CursoNivel getNivel() {
 		return nivel;
 	}
 
-	public void setNivel(String nivel) {
+	public void setNivel(CursoNivel nivel) {
 		this.nivel = nivel;
 	}
 

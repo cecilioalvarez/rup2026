@@ -21,12 +21,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.arquitecturajava.negocio.Curso;
+import com.arquitecturajava.negocio.CursoNivel;
 import com.arquitecturajava.negocio.Imparticion;
 import com.arquitecturajava.persistencia.CursoRepository;
 import com.arquitecturajava.persistencia.ImparticionRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ImparticionServiceTest {
+
+	private static final CursoNivel BASICO = new CursoNivel(1L, "Básico", 1);
 
 	@Mock
 	private ImparticionRepository imparticionRepository;
@@ -57,7 +60,7 @@ class ImparticionServiceTest {
 
 	@Test
 	void insertarAsociaLaImparticionAlCursoYGuarda() {
-		Curso curso = new Curso(1L, "Java", "Cecilio Álvarez", 20, "Básico");
+		Curso curso = new Curso(1L, "Java", "Cecilio Álvarez", 20, BASICO);
 		Imparticion imparticion = new Imparticion(7L, "Java - Mayo", LocalDate.of(2026, 5, 4),
 				LocalDate.of(2026, 5, 8));
 		when(cursoRepository.findById(1L)).thenReturn(Optional.of(curso));
@@ -82,7 +85,7 @@ class ImparticionServiceTest {
 
 	@Test
 	void insertarRechazaFechaFinAnteriorAInicio() {
-		Curso curso = new Curso(1L, "Java", "Cecilio Álvarez", 20, "Básico");
+		Curso curso = new Curso(1L, "Java", "Cecilio Álvarez", 20, BASICO);
 		Imparticion imparticion = new Imparticion(null, "X", LocalDate.of(2026, 5, 8), LocalDate.of(2026, 5, 4));
 		when(cursoRepository.findById(1L)).thenReturn(Optional.of(curso));
 
@@ -108,7 +111,7 @@ class ImparticionServiceTest {
 
 	@Test
 	void actualizarModificaLosDatosConservandoElCurso() {
-		Curso curso = new Curso(1L, "Java", "Cecilio Álvarez", 20, "Básico");
+		Curso curso = new Curso(1L, "Java", "Cecilio Álvarez", 20, BASICO);
 		Imparticion existente = new Imparticion(3L, "Java - Mayo", LocalDate.of(2026, 5, 4),
 				LocalDate.of(2026, 5, 8));
 		curso.addImparticion(existente);

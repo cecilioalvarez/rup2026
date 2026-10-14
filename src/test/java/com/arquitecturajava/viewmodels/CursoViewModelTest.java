@@ -29,14 +29,14 @@ class CursoViewModelTest {
 
 	@Test
 	void duracionDe200HorasEsValida() {
-		CursoViewModel vm = new CursoViewModel(null, "Java", "A", 200, "Básico");
+		CursoViewModel vm = new CursoViewModel(null, "Java", "A", 200, 1L, "Básico");
 
 		assertTrue(validator.validate(vm).isEmpty());
 	}
 
 	@Test
 	void duracionDeMasDe200HorasNoEsValida() {
-		CursoViewModel vm = new CursoViewModel(null, "Java", "A", 201, "Básico");
+		CursoViewModel vm = new CursoViewModel(null, "Java", "A", 201, 1L, "Básico");
 
 		assertEquals(1, validator.validate(vm).size());
 	}
