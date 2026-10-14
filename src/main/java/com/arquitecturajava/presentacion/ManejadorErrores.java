@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.arquitecturajava.servicios.CursoNoEncontradoException;
 import com.arquitecturajava.servicios.ImparticionNoEncontradaException;
+import com.arquitecturajava.servicios.ProfesorNoEncontradoException;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -21,6 +22,12 @@ public class ManejadorErrores {
 
 	@ExceptionHandler(ImparticionNoEncontradaException.class)
 	public void imparticionNoEncontrada(ImparticionNoEncontradaException e, HttpServletResponse response)
+			throws IOException {
+		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+	}
+
+	@ExceptionHandler(ProfesorNoEncontradoException.class)
+	public void profesorNoEncontrado(ProfesorNoEncontradoException e, HttpServletResponse response)
 			throws IOException {
 		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
 	}

@@ -1,0 +1,56 @@
+package com.arquitecturajava.servicios;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.arquitecturajava.negocio.Profesor;
+import com.arquitecturajava.persistencia.ProfesorRepository;
+
+@Service
+@Transactional
+public class ProfesorService {
+
+	private final ProfesorRepository profesorRepository;
+
+	public ProfesorService(ProfesorRepository profesorRepository) {
+		this.profesorRepository = profesorRepository;
+	}
+
+	@Transactional(readOnly = true)
+	public List<Profesor> buscarTodos() {
+		return profesorRepository.findAllByOrderByApellidosAscNombreAsc();
+	}
+
+	@Transactional(readOnly = true)
+	public Profesor buscarPorId(Long id) {
+		return profesorRepository.findById(id).orElseThrow(() -> new ProfesorNoEncontradoException(id));
+	}
+
+	public Profesor insertar(Profesor profesor) {
+		// un alta nunca debe sobrescribir un profesor existente
+		profesor.setId(null);
+		if (profesorRepository.existsByDniIgnoreCase(profesor.getDni())) {
+			throw new DniDuplicadoException(profesor.getDni());
+		}
+		return profesorRepository.save(profesor);
+	}
+
+	public Profesor actualizar(Long id, Profesor profesor) {
+		if (!profesorRepository.existsById(id)) {
+			throw new ProfesorNoEncontradoException(id);
+		}
+		// el propio profesor puede conservar su DNI
+		if (profesorRepository.existsByDniIgnoreCaseAndIdNot(profesor.getDni(), id)) {
+			throw new DniDuplicadoException(profesor.getDni());
+		}
+		profesor.setId(id);
+		return profesorRepository.save(profesor);
+	}
+
+	public void borrar(Long id) {
+		profesorRepository.deleteById(id);
+	}
+
+}
