@@ -1,0 +1,54 @@
+@startuml diagrama-clases
+title Diagrama de clases - applicacion (negocio)
+
+scale 0.8
+
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+hide empty members
+set separator none
+
+' Getters y setters omitidos para simplificar
+
+package "com.arquitecturajava.negocio" {
+  class Curso <<Entity>> {
+    - id : Long
+    - titulo : String
+    - autor : String
+    {field} - duracion : int {@Max(200)}
+    - nivel : String
+    - imparticiones : List<Imparticion>
+    + addImparticion(imparticion : Imparticion) : void
+    + removeImparticion(imparticion : Imparticion) : void
+  }
+
+  class Imparticion <<Entity>> {
+    - id : Long
+    - nombre : String
+    - fechaInicio : LocalDate
+    - fechaFin : LocalDate
+    - curso : Curso
+  }
+}
+
+' --- Modelo de negocio ---
+Curso "1" -- "0..*" Imparticion : imparticiones / curso >
+note on link
+  @OneToMany(mappedBy = "curso", cascade = REMOVE)
+  @ManyToOne(fetch = LAZY)
+end note
+
+note bottom of Imparticion
+  <b>Carga vaga (LAZY)</b>
+  Al cargar una Imparticion, su Curso no se lee de la base
+  de datos: JPA coloca un proxy en su lugar.
+  La consulta del Curso solo se lanza la primera vez que
+  se accede a él (por ejemplo, imparticion.getCurso().getTitulo()).
+  En sentido inverso, @OneToMany es LAZY por defecto:
+  la lista curso.imparticiones tampoco se carga hasta que se recorre.
+  Si se accede fuera de la sesión/transacción
+  se produce una LazyInitializationException.
+end note
+
+@enduml

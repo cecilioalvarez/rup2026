@@ -1,0 +1,72 @@
+@startuml diagrama-repositorios
+title Diagrama de clases - jerarquía de repositorios
+
+scale 0.8
+
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+hide empty members
+set separator none
+
+package "org.springframework.data.repository" {
+  interface "Repository<T, ID>" as Repository <<Marker>>
+
+  interface "CrudRepository<T, ID>" as CrudRepository {
+    + <b>save(entity : S) : S</b>
+    + saveAll(entities : Iterable<S>) : Iterable<S>
+    + <b>findById(id : ID) : Optional<T></b>
+    + existsById(id : ID) : boolean
+    + <b>findAll() : Iterable<T></b>
+    + findAllById(ids : Iterable<ID>) : Iterable<T>
+    + count() : long
+    + deleteById(id : ID) : void
+    + delete(entity : T) : void
+    + deleteAll() : void
+  }
+
+  interface "ListCrudRepository<T, ID>" as ListCrudRepository {
+    + saveAll(entities : Iterable<S>) : List<S>
+    + <b>findAll() : List<T></b>
+    + findAllById(ids : Iterable<ID>) : List<T>
+  }
+}
+
+package "org.springframework.data.jpa.repository" {
+  interface "JpaRepository<T, ID>" as JpaRepository {
+    + flush() : void
+    + saveAndFlush(entity : S) : S
+    + deleteAllInBatch() : void
+    + getReferenceById(id : ID) : T
+    + <b>findAll(example : Example<S>) : List<S></b>
+  }
+}
+
+package "com.arquitecturajava.persistencia" {
+  interface CursoRepository <<Repository>>
+}
+
+package "com.arquitecturajava.negocio" {
+  class Curso <<Entity>>
+}
+
+Repository <|-down- CrudRepository
+CrudRepository <|-down- ListCrudRepository
+ListCrudRepository <|-down- JpaRepository
+JpaRepository <|-down- CursoRepository : <Curso, Long>
+CursoRepository .right.> Curso : gestiona >
+
+note right of CrudRepository
+  <b>findById</b> es el antiguo <b>findOne(id)</b>:
+  se renombró en Spring Data 2.0 y ahora
+  devuelve un Optional<T>.
+end note
+
+note right of CursoRepository
+  Interfaz vacía: Spring Data genera la
+  implementación en tiempo de ejecución y
+  hereda save, findAll, findById... con
+  T = Curso e ID = Long.
+end note
+
+@enduml
