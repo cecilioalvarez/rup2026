@@ -42,4 +42,11 @@ class InicioControllerIntegracionTest {
 				.andExpect(content().string(containsString("class=\"nav-link active\" href=\"/profesores\" aria-current=\"page\"")));
 	}
 
+	@Test
+	void listadoDeAlumnosMarcaAlumnosComoActivo() throws Exception {
+		mockMvc.perform(get("/alumnos"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("class=\"nav-link active\" href=\"/alumnos\" aria-current=\"page\"")));
+	}
+
 }

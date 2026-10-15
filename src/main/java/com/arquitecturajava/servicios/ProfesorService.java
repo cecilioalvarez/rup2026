@@ -32,7 +32,7 @@ public class ProfesorService {
 		// un alta nunca debe sobrescribir un profesor existente
 		profesor.setId(null);
 		if (profesorRepository.existsByDniIgnoreCase(profesor.getDni())) {
-			throw new DniDuplicadoException(profesor.getDni());
+			throw new DniDuplicadoException("profesor", profesor.getDni());
 		}
 		return profesorRepository.save(profesor);
 	}
@@ -43,7 +43,7 @@ public class ProfesorService {
 		}
 		// el propio profesor puede conservar su DNI
 		if (profesorRepository.existsByDniIgnoreCaseAndIdNot(profesor.getDni(), id)) {
-			throw new DniDuplicadoException(profesor.getDni());
+			throw new DniDuplicadoException("profesor", profesor.getDni());
 		}
 		profesor.setId(id);
 		return profesorRepository.save(profesor);
