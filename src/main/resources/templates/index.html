@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inicio</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+</head>
+<body>
+	<nav th:replace="~{fragmentos/menu :: menu('')}"></nav>
+
+	<div class="container py-4">
+		<h1 class="h2 mb-4">¿Por dónde quieres empezar?</h1>
+		<div class="row g-4">
+			<div class="col-md-6">
+				<div class="card shadow-sm h-100">
+					<div class="card-body">
+						<h2 class="h4 card-title">Cursos</h2>
+						<p class="card-text text-body-secondary">Gestiona los cursos y sus imparticiones.</p>
+						<a class="btn btn-primary stretched-link" th:href="@{/cursos}" href="cursos/listado.html">Ir a cursos</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="card shadow-sm h-100">
+					<div class="card-body">
+						<h2 class="h4 card-title">Profesores</h2>
+						<p class="card-text text-body-secondary">Gestiona los profesores.</p>
+						<a class="btn btn-primary stretched-link" th:href="@{/profesores}" href="profesores/listado.html">Ir a profesores</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

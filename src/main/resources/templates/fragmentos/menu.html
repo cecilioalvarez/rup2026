@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+	<!-- menú principal compartido: "activo" indica la sección marcada (cursos, profesores o vacío) -->
+	<nav class="navbar navbar-expand-sm navbar-dark bg-primary" th:fragment="menu(activo)">
+		<div class="container">
+			<a class="navbar-brand" th:href="@{/}" href="../index.html">Formación</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal"
+				aria-controls="menuPrincipal" aria-expanded="false" aria-label="Mostrar menú">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="menuPrincipal">
+				<ul class="navbar-nav">
+					<li class="nav-item">
+						<a class="nav-link" th:classappend="${activo == 'cursos'} ? 'active'"
+							th:attr="aria-current=${activo == 'cursos'} ? 'page'" th:href="@{/cursos}"
+							href="../cursos/listado.html">Cursos</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" th:classappend="${activo == 'profesores'} ? 'active'"
+							th:attr="aria-current=${activo == 'profesores'} ? 'page'" th:href="@{/profesores}"
+							href="../profesores/listado.html">Profesores</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+</body>
+</html>
