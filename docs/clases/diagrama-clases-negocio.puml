@@ -70,6 +70,14 @@ package "com.arquitecturajava.negocio" {
     + addMatricula(matricula : Matricula) : void
     + removeMatricula(matricula : Matricula) : void
   }
+
+  class Administrador <<Entity>> {
+    - id : Long
+    - nombre : String
+    - apellidos : String
+    - email : String
+    + getNombreCompleto() : String
+  }
 }
 
 ' --- Modelo de negocio ---

@@ -22,3 +22,6 @@ INSERT INTO matricula (fecha, alumno_id, imparticion_id) VALUES ('2025-12-15', 1
 INSERT INTO matricula (fecha, alumno_id, imparticion_id) VALUES ('2026-01-20', 1, 3);
 INSERT INTO matricula (fecha, alumno_id, imparticion_id) VALUES ('2025-12-18', 2, 1);
 INSERT INTO matricula (fecha, alumno_id, imparticion_id) VALUES ('2026-03-10', 2, 4);
+
+INSERT INTO administrador (nombre, apellidos, email) VALUES ('Elena', 'Ruiz Torres', 'elena.ruiz@example.com');
+INSERT INTO administrador (nombre, apellidos, email) VALUES ('Javier', 'Moreno Vidal', 'javier.moreno@example.com');
