@@ -7,6 +7,7 @@ Aplicación web de gestión de formación: **cursos** (con nivel), sus **imparti
 - Spring MVC + Thymeleaf, Bootstrap 5.3.3 por CDN
 - Spring Data JPA (Hibernate) + H2 en memoria; datos de ejemplo en `src/main/resources/data.sql`
 - Bean Validation, JUnit 6 + Mockito, Selenium 4.43 (Microsoft Edge) para e2e
+- ArchUnit 1.5.1 (`archunit-junit5`) para tests de arquitectura; versión en la propiedad `archunit.version` del `pom.xml` (Spring Boot no la gestiona)
 
 ## Comandos
 | Qué | Comando |
