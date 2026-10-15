@@ -40,13 +40,33 @@ public class ListadoImparticionesPagina extends Pagina {
 
 	// nombre, profesor, fecha de inicio y fecha de fin de la impartición, tal y como se muestran en la tabla
 	public List<String> filaDeImparticion(String nombre) {
-		// se busca la fila cuya segunda columna (Nombre) coincide
-		WebElement fila = filas.stream()
+		WebElement fila = buscarFila(nombre);
+		// columnas de la tabla: Id, Nombre, Profesor, Fecha de inicio, Fecha de fin, Acciones -> las 4 centrales
+		return fila.findElements(By.tagName("td")).stream().map(WebElement::getText).toList().subList(1, 5);
+	}
+
+	// pulsa el botón "Matrículas" de la fila de la impartición: el navegador pasa a sus matrículas
+	public MatriculasPagina navegarAMatriculas(String nombre) {
+		buscarFila(nombre).findElement(By.linkText("Matrículas")).click();
+		MatriculasPagina matriculas = new MatriculasPagina(driver);
+		pausa();
+		return matriculas;
+	}
+
+	// pulsa el botón "Editar" de la fila de la impartición: se abre su formulario con los datos actuales
+	public FormularioImparticionPagina navegarAEditarImparticion(String nombre) {
+		buscarFila(nombre).findElement(By.linkText("Editar")).click();
+		FormularioImparticionPagina formulario = new FormularioImparticionPagina(driver);
+		pausa();
+		return formulario;
+	}
+
+	// se busca la fila cuya segunda columna (Nombre) coincide
+	private WebElement buscarFila(String nombre) {
+		return filas.stream()
 				.filter(tr -> tr.findElement(By.cssSelector("td:nth-child(2)")).getText().equals(nombre))
 				.findFirst()
 				.orElseThrow(() -> new AssertionError("La impartición " + nombre + " no aparece en el listado"));
-		// columnas de la tabla: Id, Nombre, Profesor, Fecha de inicio, Fecha de fin, Acciones -> las 4 centrales
-		return fila.findElements(By.tagName("td")).stream().map(WebElement::getText).toList().subList(1, 5);
 	}
 
 }

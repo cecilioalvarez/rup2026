@@ -13,7 +13,7 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 // (su nombre no termina en "Test", así que un "mvnw test" normal no la lanza y no repite los tests)
 @Suite
 @SuiteDisplayName("Altas de extremo a extremo (Selenium)")
-@SelectClasses({ AltaCursoConImparticionSeleniumTest.class })
+@SelectClasses({ AltaCursoConImparticionSeleniumTest.class, AltaAlumnoConMatriculaSeleniumTest.class })
 class AltasSeleniumSuite {
 
 }

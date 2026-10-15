@@ -3,7 +3,6 @@ package com.arquitecturajava.e2e.paginas;
 import java.time.Duration;
 import java.time.LocalDate;
 
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -70,13 +69,6 @@ public class FormularioImparticionPagina extends Pagina {
 		ListadoImparticionesPagina listado = new ListadoImparticionesPagina(driver);
 		pausa();
 		return listado;
-	}
-
-	// Los <input type="date"> se teclean en el formato del idioma del navegador (dd/mm/aaaa, mm/dd/aaaa...),
-	// así que con sendKeys el test dependería del idioma. Se asigna el valor con JavaScript en el formato
-	// estándar aaaa-mm-dd, que es el que el campo envía siempre al servidor.
-	private void escribirFecha(WebElement campo, LocalDate fecha) {
-		((JavascriptExecutor) driver).executeScript("arguments[0].value = arguments[1];", campo, fecha.toString());
 	}
 
 }
