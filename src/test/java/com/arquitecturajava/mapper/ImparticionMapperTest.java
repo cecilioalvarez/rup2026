@@ -1,6 +1,7 @@
 package com.arquitecturajava.mapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.arquitecturajava.negocio.Imparticion;
+import com.arquitecturajava.negocio.Profesor;
 import com.arquitecturajava.viewmodels.ImparticionViewModel;
 
 class ImparticionMapperTest {
@@ -16,6 +18,7 @@ class ImparticionMapperTest {
 	void toViewModelCopiaLosDatosDeLaImparticion() {
 		Imparticion imparticion = new Imparticion(1L, "Java - Enero", LocalDate.of(2026, 1, 12),
 				LocalDate.of(2026, 1, 23));
+		new Profesor(2L, "87654321X", "Ana", "Peña López").addImparticion(imparticion);
 
 		ImparticionViewModel vm = ImparticionMapper.toViewModel(imparticion);
 
@@ -23,6 +26,19 @@ class ImparticionMapperTest {
 		assertEquals("Java - Enero", vm.nombre());
 		assertEquals(LocalDate.of(2026, 1, 12), vm.fechaInicio());
 		assertEquals(LocalDate.of(2026, 1, 23), vm.fechaFin());
+		assertEquals(2L, vm.idProfesor());
+		assertEquals("Ana Peña López", vm.profesor());
+	}
+
+	@Test
+	void toViewModelSinProfesorDejaLosDatosDelProfesorANull() {
+		Imparticion imparticion = new Imparticion(1L, "Java - Enero", LocalDate.of(2026, 1, 12),
+				LocalDate.of(2026, 1, 23));
+
+		ImparticionViewModel vm = ImparticionMapper.toViewModel(imparticion);
+
+		assertNull(vm.idProfesor());
+		assertNull(vm.profesor());
 	}
 
 	@Test
@@ -41,7 +57,7 @@ class ImparticionMapperTest {
 	@Test
 	void toImparticionCopiaLosDatosAlObjetoDeNegocio() {
 		ImparticionViewModel vm = new ImparticionViewModel(5L, "Docker - Mayo", LocalDate.of(2026, 5, 4),
-				LocalDate.of(2026, 5, 8));
+				LocalDate.of(2026, 5, 8), 2L, "Ana Peña López");
 
 		Imparticion imparticion = ImparticionMapper.toImparticion(vm);
 

@@ -43,18 +43,67 @@ package "org.springframework.data.jpa.repository" {
 }
 
 package "com.arquitecturajava.persistencia" {
-  interface CursoRepository <<Repository>>
+  interface CursoNivelRepository <<Repository>> {
+    + findAllByOrderByOrdenAsc() : List<CursoNivel>
+  }
+
+  interface CursoRepository <<Repository>> {
+    + findByTituloStartingWithIgnoreCase(titulo : String) : List<Curso>
+    + findByAutorStartingWithIgnoreCase(autor : String) : List<Curso>
+    + findByNivelNombreStartingWithIgnoreCase(nivel : String) : List<Curso>
+  }
+
+  interface ImparticionRepository <<Repository>> {
+    + findByCursoIdOrderByFechaInicioAsc(cursoId : Long) : List<Imparticion>
+    + findByIdAndCursoId(id : Long, cursoId : Long) : Optional<Imparticion>
+  }
+
+  interface ProfesorRepository <<Repository>> {
+    + findAllByOrderByApellidosAscNombreAsc() : List<Profesor>
+    + findByNombreContainingIgnoreCaseOrderByApellidosAscNombreAsc(nombre : String) : List<Profesor>
+    + findByApellidosContainingIgnoreCaseOrderByApellidosAscNombreAsc(apellidos : String) : List<Profesor>
+    + existsByDniIgnoreCase(dni : String) : boolean
+    + existsByDniIgnoreCaseAndIdNot(dni : String, id : Long) : boolean
+  }
+
+  interface MatriculaRepository <<Repository>> {
+    + findByImparticionIdOrderByAlumnoApellidosAscAlumnoNombreAsc(imparticionId : Long) : List<Matricula>
+    + findByAlumnoIdOrderByFechaDesc(alumnoId : Long) : List<Matricula>
+    + findByIdAndImparticionId(id : Long, imparticionId : Long) : Optional<Matricula>
+    + existsByAlumnoIdAndImparticionId(alumnoId : Long, imparticionId : Long) : boolean
+  }
+
+  interface AlumnoRepository <<Repository>> {
+    + findAllByOrderByApellidosAscNombreAsc() : List<Alumno>
+    + existsByDniIgnoreCase(dni : String) : boolean
+    + existsByDniIgnoreCaseAndIdNot(dni : String, id : Long) : boolean
+  }
 }
 
 package "com.arquitecturajava.negocio" {
+  class CursoNivel <<Entity>>
   class Curso <<Entity>>
+  class Imparticion <<Entity>>
+  class Profesor <<Entity>>
+  class Alumno <<Entity>>
+  class Matricula <<Entity>>
 }
 
 Repository <|-down- CrudRepository
 CrudRepository <|-down- ListCrudRepository
 ListCrudRepository <|-down- JpaRepository
+JpaRepository <|-down- CursoNivelRepository : <CursoNivel, Long>
 JpaRepository <|-down- CursoRepository : <Curso, Long>
-CursoRepository .right.> Curso : gestiona >
+JpaRepository <|-down- ImparticionRepository : <Imparticion, Long>
+JpaRepository <|-down- ProfesorRepository : <Profesor, Long>
+JpaRepository <|-down- AlumnoRepository : <Alumno, Long>
+JpaRepository <|-down- MatriculaRepository : <Matricula, Long>
+CursoNivelRepository .down.> CursoNivel : gestiona >
+CursoRepository .down.> Curso : gestiona >
+ImparticionRepository .down.> Imparticion : gestiona >
+ProfesorRepository .down.> Profesor : gestiona >
+AlumnoRepository .down.> Alumno : gestiona >
+MatriculaRepository .down.> Matricula : gestiona >
 
 note right of CrudRepository
   <b>findById</b> es el antiguo <b>findOne(id)</b>:
@@ -63,10 +112,20 @@ note right of CrudRepository
 end note
 
 note right of CursoRepository
-  Interfaz vacía: Spring Data genera la
-  implementación en tiempo de ejecución y
-  hereda save, findAll, findById... con
-  T = Curso e ID = Long.
+  Solo se declaran las consultas propias:
+  Spring Data genera la implementación en
+  tiempo de ejecución a partir del nombre del
+  método y hereda save, findAll, findById...
+  con T = Curso e ID = Long.
+end note
+
+note right of ImparticionRepository
+  findByCursoIdOrderByFechaInicioAsc lleva
+  @EntityGraph(attributePaths = "profesor"):
+  carga el profesor en la misma consulta
+  para el listado (evita N+1).
+  MatriculaRepository hace lo mismo con
+  "alumno" y con "imparticion.curso".
 end note
 
 @enduml

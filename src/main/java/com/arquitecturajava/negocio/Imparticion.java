@@ -1,7 +1,11 @@
 package com.arquitecturajava.negocio;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Imparticion {
@@ -23,6 +28,14 @@ public class Imparticion {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "curso_id")
 	private Curso curso;
+
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "profesor_id", nullable = false)
+	private Profesor profesor;
+
+	// las matrículas no tienen sentido sin su impartición: se borran con ella
+	@OneToMany(mappedBy = "imparticion", cascade = CascadeType.REMOVE)
+	private List<Matricula> matriculas = new ArrayList<>();
 
 	public Imparticion() {
 	}
@@ -72,6 +85,28 @@ public class Imparticion {
 
 	public void setCurso(Curso curso) {
 		this.curso = curso;
+	}
+
+	public Profesor getProfesor() {
+		return profesor;
+	}
+
+	public void setProfesor(Profesor profesor) {
+		this.profesor = profesor;
+	}
+
+	public List<Matricula> getMatriculas() {
+		return Collections.unmodifiableList(matriculas);
+	}
+
+	public void addMatricula(Matricula matricula) {
+		matriculas.add(matricula);
+		matricula.setImparticion(this);
+	}
+
+	public void removeMatricula(Matricula matricula) {
+		matriculas.remove(matricula);
+		matricula.setImparticion(null);
 	}
 
 }

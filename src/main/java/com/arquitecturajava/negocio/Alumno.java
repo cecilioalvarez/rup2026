@@ -1,10 +1,15 @@
 package com.arquitecturajava.negocio;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Alumno {
@@ -17,6 +22,10 @@ public class Alumno {
 	private String nombre;
 	private String apellidos;
 	private String email;
+
+	// sin cascada: un alumno con matrículas no se puede borrar
+	@OneToMany(mappedBy = "alumno")
+	private List<Matricula> matriculas = new ArrayList<>();
 
 	public Alumno() {
 	}
@@ -67,6 +76,24 @@ public class Alumno {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getNombreCompleto() {
+		return nombre + " " + apellidos;
+	}
+
+	public List<Matricula> getMatriculas() {
+		return Collections.unmodifiableList(matriculas);
+	}
+
+	public void addMatricula(Matricula matricula) {
+		matriculas.add(matricula);
+		matricula.setAlumno(this);
+	}
+
+	public void removeMatricula(Matricula matricula) {
+		matriculas.remove(matricula);
+		matricula.setAlumno(null);
 	}
 
 }

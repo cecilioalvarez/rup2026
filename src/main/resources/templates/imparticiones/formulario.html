@@ -54,6 +54,16 @@
 										th:errors="*{fechaFin}">Error</div>
 								</div>
 							</div>
+							<div class="mb-4">
+								<label class="form-label" for="idProfesor">Profesor</label>
+								<select class="form-select" th:field="*{idProfesor}" required th:errorclass="is-invalid">
+									<option value="">-- Selecciona --</option>
+									<option th:each="p : ${profesores}" th:value="${p.id}"
+										th:text="${p.nombre + ' ' + p.apellidos}">Laura Martín García</option>
+								</select>
+								<div class="invalid-feedback" th:if="${#fields.hasErrors('idProfesor')}"
+									th:errors="*{idProfesor}">Error</div>
+							</div>
 							<div class="d-flex gap-2">
 								<button class="btn btn-primary" type="submit">Guardar</button>
 								<a class="btn btn-outline-secondary" th:href="@{/cursos/{id}/imparticiones(id=${curso.id})}"

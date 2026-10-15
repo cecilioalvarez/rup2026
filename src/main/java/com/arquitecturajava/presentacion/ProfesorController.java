@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.arquitecturajava.mapper.ProfesorMapper;
 import com.arquitecturajava.servicios.CampoBusquedaProfesor;
 import com.arquitecturajava.servicios.DniDuplicadoException;
+import com.arquitecturajava.servicios.ProfesorConImparticionesException;
 import com.arquitecturajava.servicios.ProfesorService;
 import com.arquitecturajava.viewmodels.ProfesorViewModel;
 
@@ -81,8 +83,12 @@ public class ProfesorController {
 	}
 
 	@PostMapping("/{id}/borrar")
-	public String borrar(@PathVariable Long id) {
-		profesorService.borrar(id);
+	public String borrar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+		try {
+			profesorService.borrar(id);
+		} catch (ProfesorConImparticionesException e) {
+			redirectAttributes.addFlashAttribute("error", e.getMessage());
+		}
 		return "redirect:/profesores";
 	}
 

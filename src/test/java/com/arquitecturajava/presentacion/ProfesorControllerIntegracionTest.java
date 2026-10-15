@@ -2,8 +2,10 @@ package com.arquitecturajava.presentacion;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -124,13 +126,27 @@ class ProfesorControllerIntegracionTest {
 	}
 
 	@Test
-	void borrarEliminaElProfesor() throws Exception {
+	void borrarEliminaElProfesorSinImparticiones() throws Exception {
+		Long id = profesorRepository.save(new Profesor(null, "11111111H", "Pedro", "Ruiz Sanz")).getId();
+
+		mockMvc.perform(post("/profesores/{id}/borrar", id))
+				.andExpect(redirectedUrl("/profesores"))
+				.andExpect(flash().attributeCount(0));
+
+		assertFalse(profesorRepository.existsById(id));
+	}
+
+	@Test
+	void borrarNoEliminaElProfesorConImparticionesYAvisa() throws Exception {
+		// en data.sql todos los profesores tienen imparticiones asignadas
 		Long id = profesorRepository.findAllByOrderByApellidosAscNombreAsc().get(0).getId();
 
 		mockMvc.perform(post("/profesores/{id}/borrar", id))
-				.andExpect(redirectedUrl("/profesores"));
+				.andExpect(redirectedUrl("/profesores"))
+				.andExpect(flash().attribute("error",
+						"No se puede borrar a Laura Martín García porque tiene imparticiones asignadas"));
 
-		assertFalse(profesorRepository.existsById(id));
+		assertTrue(profesorRepository.existsById(id));
 	}
 
 	private List<String> apellidosListados(String campo, String texto) throws Exception {

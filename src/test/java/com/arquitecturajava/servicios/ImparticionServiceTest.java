@@ -23,8 +23,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.arquitecturajava.negocio.Curso;
 import com.arquitecturajava.negocio.CursoNivel;
 import com.arquitecturajava.negocio.Imparticion;
+import com.arquitecturajava.negocio.Profesor;
 import com.arquitecturajava.persistencia.CursoRepository;
 import com.arquitecturajava.persistencia.ImparticionRepository;
+import com.arquitecturajava.persistencia.ProfesorRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ImparticionServiceTest {
@@ -36,6 +38,11 @@ class ImparticionServiceTest {
 
 	@Mock
 	private CursoRepository cursoRepository;
+
+	@Mock
+	private ProfesorRepository profesorRepository;
+
+	private final Profesor ana = new Profesor(2L, "87654321X", "Ana", "Peña López");
 
 	@InjectMocks
 	private ImparticionService imparticionService;
@@ -64,13 +71,16 @@ class ImparticionServiceTest {
 		Imparticion imparticion = new Imparticion(7L, "Java - Mayo", LocalDate.of(2026, 5, 4),
 				LocalDate.of(2026, 5, 8));
 		when(cursoRepository.findById(1L)).thenReturn(Optional.of(curso));
+		when(profesorRepository.findById(2L)).thenReturn(Optional.of(ana));
 		when(imparticionRepository.save(imparticion)).thenReturn(imparticion);
 
-		imparticionService.insertar(1L, imparticion);
+		imparticionService.insertar(1L, 2L, imparticion);
 
 		assertNull(imparticion.getId());
 		assertSame(curso, imparticion.getCurso());
 		assertTrue(curso.getImparticiones().contains(imparticion));
+		assertSame(ana, imparticion.getProfesor());
+		assertTrue(ana.getImparticiones().contains(imparticion));
 		verify(imparticionRepository).save(imparticion);
 	}
 
@@ -79,7 +89,7 @@ class ImparticionServiceTest {
 		Imparticion imparticion = new Imparticion(null, "X", LocalDate.of(2026, 5, 4), LocalDate.of(2026, 5, 8));
 		when(cursoRepository.findById(99L)).thenReturn(Optional.empty());
 
-		assertThrows(CursoNoEncontradoException.class, () -> imparticionService.insertar(99L, imparticion));
+		assertThrows(CursoNoEncontradoException.class, () -> imparticionService.insertar(99L, 2L, imparticion));
 		verify(imparticionRepository, never()).save(any());
 	}
 
@@ -88,9 +98,39 @@ class ImparticionServiceTest {
 		Curso curso = new Curso(1L, "Java", "Cecilio Álvarez", 20, BASICO);
 		Imparticion imparticion = new Imparticion(null, "X", LocalDate.of(2026, 5, 8), LocalDate.of(2026, 5, 4));
 		when(cursoRepository.findById(1L)).thenReturn(Optional.of(curso));
+		when(profesorRepository.findById(2L)).thenReturn(Optional.of(ana));
 
-		assertThrows(IllegalArgumentException.class, () -> imparticionService.insertar(1L, imparticion));
+		assertThrows(IllegalArgumentException.class, () -> imparticionService.insertar(1L, 2L, imparticion));
 		verify(imparticionRepository, never()).save(any());
+	}
+
+	@Test
+	void insertarLanzaExcepcionSiElProfesorNoExiste() {
+		Curso curso = new Curso(1L, "Java", "Cecilio Álvarez", 20, BASICO);
+		Imparticion imparticion = new Imparticion(null, "X", LocalDate.of(2026, 5, 4), LocalDate.of(2026, 5, 8));
+		when(cursoRepository.findById(1L)).thenReturn(Optional.of(curso));
+		when(profesorRepository.findById(99L)).thenReturn(Optional.empty());
+
+		assertThrows(ProfesorNoEncontradoException.class, () -> imparticionService.insertar(1L, 99L, imparticion));
+		verify(imparticionRepository, never()).save(any());
+	}
+
+	@Test
+	void actualizarCambiaElProfesorDeLaImparticion() {
+		Profesor laura = new Profesor(1L, "12345678Z", "Laura", "Martín García");
+		Imparticion existente = new Imparticion(3L, "Java - Mayo", LocalDate.of(2026, 5, 4),
+				LocalDate.of(2026, 5, 8));
+		laura.addImparticion(existente);
+		Imparticion datos = new Imparticion(null, "Java - Mayo", LocalDate.of(2026, 5, 4), LocalDate.of(2026, 5, 8));
+		when(imparticionRepository.findByIdAndCursoId(3L, 1L)).thenReturn(Optional.of(existente));
+		when(profesorRepository.findById(2L)).thenReturn(Optional.of(ana));
+		when(imparticionRepository.save(existente)).thenReturn(existente);
+
+		imparticionService.actualizar(1L, 3L, 2L, datos);
+
+		assertSame(ana, existente.getProfesor());
+		assertTrue(ana.getImparticiones().contains(existente));
+		assertTrue(laura.getImparticiones().isEmpty());
 	}
 
 	@Test
@@ -118,9 +158,10 @@ class ImparticionServiceTest {
 		Imparticion datos = new Imparticion(null, "Java - Junio", LocalDate.of(2026, 6, 1),
 				LocalDate.of(2026, 6, 5));
 		when(imparticionRepository.findByIdAndCursoId(3L, 1L)).thenReturn(Optional.of(existente));
+		when(profesorRepository.findById(2L)).thenReturn(Optional.of(ana));
 		when(imparticionRepository.save(existente)).thenReturn(existente);
 
-		imparticionService.actualizar(1L, 3L, datos);
+		imparticionService.actualizar(1L, 3L, 2L, datos);
 
 		assertEquals(3L, existente.getId());
 		assertEquals("Java - Junio", existente.getNombre());
@@ -135,7 +176,7 @@ class ImparticionServiceTest {
 		Imparticion datos = new Imparticion(null, "X", LocalDate.of(2026, 6, 1), LocalDate.of(2026, 6, 5));
 		when(imparticionRepository.findByIdAndCursoId(3L, 99L)).thenReturn(Optional.empty());
 
-		assertThrows(ImparticionNoEncontradaException.class, () -> imparticionService.actualizar(99L, 3L, datos));
+		assertThrows(ImparticionNoEncontradaException.class, () -> imparticionService.actualizar(99L, 3L, 2L, datos));
 		verify(imparticionRepository, never()).save(any());
 	}
 
@@ -145,8 +186,9 @@ class ImparticionServiceTest {
 				LocalDate.of(2026, 5, 8));
 		Imparticion datos = new Imparticion(null, "X", LocalDate.of(2026, 6, 5), LocalDate.of(2026, 6, 1));
 		when(imparticionRepository.findByIdAndCursoId(3L, 1L)).thenReturn(Optional.of(existente));
+		when(profesorRepository.findById(2L)).thenReturn(Optional.of(ana));
 
-		assertThrows(IllegalArgumentException.class, () -> imparticionService.actualizar(1L, 3L, datos));
+		assertThrows(IllegalArgumentException.class, () -> imparticionService.actualizar(1L, 3L, 2L, datos));
 		verify(imparticionRepository, never()).save(any());
 	}
 

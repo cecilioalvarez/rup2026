@@ -2,8 +2,10 @@ package com.arquitecturajava.presentacion;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.arquitecturajava.negocio.Alumno;
 import com.arquitecturajava.persistencia.AlumnoRepository;
 import com.arquitecturajava.viewmodels.AlumnoViewModel;
+import com.arquitecturajava.viewmodels.MatriculaViewModel;
 
 // Controller, servicio y repositorio reales contra H2 con los datos de data.sql;
 // cada test se ejecuta en una transacción que se deshace al terminar
@@ -113,13 +116,52 @@ class AlumnoControllerIntegracionTest {
 	}
 
 	@Test
-	void borrarEliminaElAlumno() throws Exception {
+	void borrarEliminaElAlumnoSinMatriculas() throws Exception {
+		Long id = alumnoRepository.save(new Alumno(null, "55667788D", "Lucía", "Vega Ruiz", "lucia@example.com"))
+				.getId();
+
+		mockMvc.perform(post("/alumnos/{id}/borrar", id))
+				.andExpect(redirectedUrl("/alumnos"))
+				.andExpect(flash().attributeCount(0));
+
+		assertFalse(alumnoRepository.existsById(id));
+	}
+
+	@Test
+	void borrarNoEliminaElAlumnoConMatriculasYAvisa() throws Exception {
+		// en data.sql todos los alumnos tienen matrículas
 		Long id = alumnoRepository.findAllByOrderByApellidosAscNombreAsc().get(0).getId();
 
 		mockMvc.perform(post("/alumnos/{id}/borrar", id))
-				.andExpect(redirectedUrl("/alumnos"));
+				.andExpect(redirectedUrl("/alumnos"))
+				.andExpect(flash().attribute("error", "No se puede borrar a Carlos Díaz Romero porque tiene matrículas"));
 
-		assertFalse(alumnoRepository.existsById(id));
+		assertTrue(alumnoRepository.existsById(id));
+	}
+
+	@Test
+	void matriculasMuestraLasMatriculasDelAlumnoConSuCurso() throws Exception {
+		Long id = alumnoRepository.findAllByOrderByApellidosAscNombreAsc().get(0).getId();
+
+		MvcResult resultado = mockMvc.perform(get("/alumnos/{id}/matriculas", id))
+				.andExpect(status().isOk())
+				.andExpect(view().name("alumnos/matriculas"))
+				.andReturn();
+
+		@SuppressWarnings("unchecked")
+		List<MatriculaViewModel> matriculas = (List<MatriculaViewModel>) resultado.getModelAndView().getModel()
+				.get("matriculas");
+		// ordenadas de la más reciente a la más antigua
+		assertEquals(List.of("Spring Boot - Febrero", "Java Básico - Enero"),
+				matriculas.stream().map(MatriculaViewModel::imparticion).toList());
+		assertEquals(List.of("Spring Boot", "Java Básico"),
+				matriculas.stream().map(MatriculaViewModel::curso).toList());
+	}
+
+	@Test
+	void matriculasDeUnAlumnoQueNoExisteDevuelve404() throws Exception {
+		mockMvc.perform(get("/alumnos/{id}/matriculas", 999))
+				.andExpect(status().isNotFound());
 	}
 
 }

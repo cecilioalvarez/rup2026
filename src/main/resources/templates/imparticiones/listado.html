@@ -32,6 +32,7 @@
 					<tr>
 						<th>Id</th>
 						<th>Nombre</th>
+						<th>Profesor</th>
 						<th>Fecha de inicio</th>
 						<th>Fecha de fin</th>
 						<th class="text-end">Acciones</th>
@@ -41,9 +42,13 @@
 					<tr th:each="imparticion : ${imparticiones}">
 						<td th:text="${imparticion.id}">1</td>
 						<td th:text="${imparticion.nombre}">Java - Enero</td>
+						<td th:text="${imparticion.profesor}">Laura Martín García</td>
 						<td th:text="${#temporals.format(imparticion.fechaInicio, 'dd/MM/yyyy')}">12/01/2026</td>
 						<td th:text="${#temporals.format(imparticion.fechaFin, 'dd/MM/yyyy')}">23/01/2026</td>
 						<td class="text-end">
+							<a class="btn btn-sm btn-outline-secondary"
+								th:href="@{/cursos/{id}/imparticiones/{idImparticion}/matriculas(id=${curso.id},idImparticion=${imparticion.id})}"
+								href="../matriculas/listado.html">Matrículas</a>
 							<a class="btn btn-sm btn-outline-primary"
 								th:href="@{/cursos/{id}/imparticiones/{idImparticion}/editar(id=${curso.id},idImparticion=${imparticion.id})}"
 								href="formulario.html">Editar</a>

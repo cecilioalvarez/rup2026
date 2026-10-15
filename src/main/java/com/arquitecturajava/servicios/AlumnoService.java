@@ -50,7 +50,15 @@ public class AlumnoService {
 	}
 
 	public void borrar(Long id) {
-		alumnoRepository.deleteById(id);
+		Alumno alumno = alumnoRepository.findById(id).orElse(null);
+		if (alumno == null) {
+			return;
+		}
+		// la FK de matricula impediría el borrado: se avisa con un error de negocio
+		if (!alumno.getMatriculas().isEmpty()) {
+			throw new AlumnoConMatriculasException(alumno.getNombreCompleto());
+		}
+		alumnoRepository.delete(alumno);
 	}
 
 }

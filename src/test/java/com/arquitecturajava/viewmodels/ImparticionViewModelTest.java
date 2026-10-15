@@ -35,23 +35,23 @@ class ImparticionViewModelTest {
 	@Test
 	void imparticionCompletaEsValida() {
 		ImparticionViewModel vm = new ImparticionViewModel(null, "Java - Enero", LocalDate.of(2026, 1, 12),
-				LocalDate.of(2026, 1, 23));
+				LocalDate.of(2026, 1, 23), 1L, null);
 
 		assertTrue(validator.validate(vm).isEmpty());
 	}
 
 	@Test
-	void imparticionVaciaTieneLosTresCamposObligatoriosConError() {
+	void imparticionVaciaTieneLosCuatroCamposObligatoriosConError() {
 		Set<String> campos = validator.validate(ImparticionViewModel.vacia()).stream()
 				.map(v -> v.getPropertyPath().toString()).collect(Collectors.toSet());
 
-		assertEquals(Set.of("nombre", "fechaInicio", "fechaFin"), campos);
+		assertEquals(Set.of("nombre", "fechaInicio", "fechaFin", "idProfesor"), campos);
 	}
 
 	@Test
 	void nombreEnBlancoNoEsValido() {
 		ImparticionViewModel vm = new ImparticionViewModel(null, "   ", LocalDate.of(2026, 1, 12),
-				LocalDate.of(2026, 1, 23));
+				LocalDate.of(2026, 1, 23), 1L, null);
 
 		assertEquals(1, validator.validate(vm).size());
 	}
@@ -60,21 +60,21 @@ class ImparticionViewModelTest {
 	void fechasCoherentesSiFinEsPosteriorOIgualAInicio() {
 		LocalDate dia = LocalDate.of(2026, 1, 12);
 
-		assertTrue(new ImparticionViewModel(null, "X", dia, dia.plusDays(5)).fechasCoherentes());
-		assertTrue(new ImparticionViewModel(null, "X", dia, dia).fechasCoherentes());
+		assertTrue(new ImparticionViewModel(null, "X", dia, dia.plusDays(5), null, null).fechasCoherentes());
+		assertTrue(new ImparticionViewModel(null, "X", dia, dia, null, null).fechasCoherentes());
 	}
 
 	@Test
 	void fechasNoCoherentesSiFinEsAnteriorAInicio() {
 		LocalDate dia = LocalDate.of(2026, 1, 12);
 
-		assertFalse(new ImparticionViewModel(null, "X", dia, dia.minusDays(1)).fechasCoherentes());
+		assertFalse(new ImparticionViewModel(null, "X", dia, dia.minusDays(1), null, null).fechasCoherentes());
 	}
 
 	@Test
 	void fechasCoherentesNoFallaSiFaltaAlgunaFecha() {
-		assertTrue(new ImparticionViewModel(null, "X", null, LocalDate.of(2026, 1, 12)).fechasCoherentes());
-		assertTrue(new ImparticionViewModel(null, "X", LocalDate.of(2026, 1, 12), null).fechasCoherentes());
+		assertTrue(new ImparticionViewModel(null, "X", null, LocalDate.of(2026, 1, 12), null, null).fechasCoherentes());
+		assertTrue(new ImparticionViewModel(null, "X", LocalDate.of(2026, 1, 12), null, null, null).fechasCoherentes());
 	}
 
 }

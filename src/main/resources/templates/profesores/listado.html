@@ -15,6 +15,8 @@
 			<a class="btn btn-primary" th:href="@{/profesores/nuevo}" href="formulario.html">Nuevo profesor</a>
 		</div>
 
+		<div class="alert alert-danger" role="alert" th:if="${error}" th:text="${error}">Error al borrar</div>
+
 		<form class="row g-2 mb-4" method="get" th:action="@{/profesores}" role="search">
 			<div class="col-sm-3">
 				<label class="visually-hidden" for="campo">Buscar por</label>

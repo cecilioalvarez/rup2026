@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.arquitecturajava.servicios.AlumnoNoEncontradoException;
 import com.arquitecturajava.servicios.CursoNoEncontradoException;
 import com.arquitecturajava.servicios.ImparticionNoEncontradaException;
+import com.arquitecturajava.servicios.MatriculaNoEncontradaException;
 import com.arquitecturajava.servicios.ProfesorNoEncontradoException;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,6 +36,12 @@ public class ManejadorErrores {
 
 	@ExceptionHandler(AlumnoNoEncontradoException.class)
 	public void alumnoNoEncontrado(AlumnoNoEncontradoException e, HttpServletResponse response) throws IOException {
+		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+	}
+
+	@ExceptionHandler(MatriculaNoEncontradaException.class)
+	public void matriculaNoEncontrada(MatriculaNoEncontradaException e, HttpServletResponse response)
+			throws IOException {
 		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
 	}
 

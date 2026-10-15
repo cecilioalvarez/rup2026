@@ -63,7 +63,15 @@ public class ProfesorService {
 	}
 
 	public void borrar(Long id) {
-		profesorRepository.deleteById(id);
+		Profesor profesor = profesorRepository.findById(id).orElse(null);
+		if (profesor == null) {
+			return;
+		}
+		// la FK de imparticion impediría el borrado: se avisa con un error de negocio
+		if (!profesor.getImparticiones().isEmpty()) {
+			throw new ProfesorConImparticionesException(profesor.getNombreCompleto());
+		}
+		profesorRepository.delete(profesor);
 	}
 
 }

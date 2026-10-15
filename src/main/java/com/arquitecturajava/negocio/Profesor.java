@@ -1,10 +1,15 @@
 package com.arquitecturajava.negocio;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Profesor {
@@ -16,6 +21,10 @@ public class Profesor {
 	private String dni;
 	private String nombre;
 	private String apellidos;
+
+	// sin cascada: un profesor con imparticiones no se puede borrar
+	@OneToMany(mappedBy = "profesor")
+	private List<Imparticion> imparticiones = new ArrayList<>();
 
 	public Profesor() {
 	}
@@ -57,6 +66,24 @@ public class Profesor {
 
 	public void setApellidos(String apellidos) {
 		this.apellidos = apellidos;
+	}
+
+	public String getNombreCompleto() {
+		return nombre + " " + apellidos;
+	}
+
+	public List<Imparticion> getImparticiones() {
+		return Collections.unmodifiableList(imparticiones);
+	}
+
+	public void addImparticion(Imparticion imparticion) {
+		imparticiones.add(imparticion);
+		imparticion.setProfesor(this);
+	}
+
+	public void removeImparticion(Imparticion imparticion) {
+		imparticiones.remove(imparticion);
+		imparticion.setProfesor(null);
 	}
 
 }

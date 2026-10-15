@@ -12,12 +12,18 @@ set separator none
 ' Getters y setters omitidos para simplificar
 
 package "com.arquitecturajava.negocio" {
+  class CursoNivel <<Entity>> {
+    - id : Long
+    - nombre : String
+    - orden : int
+  }
+
   class Curso <<Entity>> {
     - id : Long
     - titulo : String
     - autor : String
     {field} - duracion : int {@Max(200)}
-    - nivel : String
+    - nivel : CursoNivel
     - imparticiones : List<Imparticion>
     + addImparticion(imparticion : Imparticion) : void
     + removeImparticion(imparticion : Imparticion) : void
@@ -29,24 +35,94 @@ package "com.arquitecturajava.negocio" {
     - fechaInicio : LocalDate
     - fechaFin : LocalDate
     - curso : Curso
+    - profesor : Profesor
+    - matriculas : List<Matricula>
+    + addMatricula(matricula : Matricula) : void
+    + removeMatricula(matricula : Matricula) : void
+  }
+
+  class Profesor <<Entity>> {
+    - id : Long
+    {field} - dni : String {unique}
+    - nombre : String
+    - apellidos : String
+    - imparticiones : List<Imparticion>
+    + getNombreCompleto() : String
+    + addImparticion(imparticion : Imparticion) : void
+    + removeImparticion(imparticion : Imparticion) : void
+  }
+
+  class Matricula <<Entity>> {
+    - id : Long
+    - fecha : LocalDate
+    - alumno : Alumno
+    - imparticion : Imparticion
+  }
+
+  class Alumno <<Entity>> {
+    - id : Long
+    {field} - dni : String {unique}
+    - nombre : String
+    - apellidos : String
+    - email : String
+    - matriculas : List<Matricula>
+    + getNombreCompleto() : String
+    + addMatricula(matricula : Matricula) : void
+    + removeMatricula(matricula : Matricula) : void
   }
 }
 
 ' --- Modelo de negocio ---
-Curso "1" -- "0..*" Imparticion : imparticiones / curso >
-note on link
+CursoNivel "0..1" <-down- "0..*" Curso : nivel <
+Curso "1" -down- "0..*" Imparticion : curso
+Profesor "1" -down- "0..*" Imparticion : profesor
+Imparticion "1" -down- "0..*" Matricula : imparticion
+Alumno "1" -down- "0..*" Matricula : alumno
+
+note left of Curso
+  <b>Curso - CursoNivel</b>
+  @ManyToOne (EAGER por defecto)
+
+  <b>Curso - Imparticion</b>
   @OneToMany(mappedBy = "curso", cascade = REMOVE)
   @ManyToOne(fetch = LAZY)
 end note
 
-note bottom of Imparticion
+note right of Profesor
+  <b>Profesor - Imparticion</b>
+  @OneToMany(mappedBy = "profesor") sin cascada
+  @ManyToOne(fetch = LAZY, optional = false)
+
+  Toda imparticion tiene un profesor
+  (profesor_id NOT NULL). ProfesorService no
+  borra un profesor con imparticiones y lanza
+  ProfesorConImparticionesException.
+end note
+
+note right of Matricula
+  <b>Matricula - Imparticion</b>
+  @OneToMany(mappedBy = "imparticion", cascade = REMOVE)
+  @ManyToOne(fetch = LAZY, optional = false)
+
+  <b>Matricula - Alumno</b>
+  @OneToMany(mappedBy = "alumno") sin cascada
+  @ManyToOne(fetch = LAZY, optional = false)
+
+  @UniqueConstraint(alumno_id, imparticion_id):
+  un alumno solo se matricula una vez en cada
+  imparticion. AlumnoService no borra un alumno
+  con matriculas (AlumnoConMatriculasException).
+end note
+
+note left of Imparticion
   <b>Carga vaga (LAZY)</b>
-  Al cargar una Imparticion, su Curso no se lee de la base
-  de datos: JPA coloca un proxy en su lugar.
-  La consulta del Curso solo se lanza la primera vez que
-  se accede a él (por ejemplo, imparticion.getCurso().getTitulo()).
-  En sentido inverso, @OneToMany es LAZY por defecto:
-  la lista curso.imparticiones tampoco se carga hasta que se recorre.
+  Al cargar una Imparticion, su Curso y su Profesor no se leen
+  de la base de datos: JPA coloca un proxy en su lugar.
+  La consulta solo se lanza la primera vez que se accede
+  (por ejemplo, imparticion.getProfesor().getNombre()).
+  El listado de imparticiones usa @EntityGraph("profesor")
+  para traer el profesor en la misma consulta y evitar N+1.
+  En sentido inverso, @OneToMany es LAZY por defecto.
   Si se accede fuera de la sesión/transacción
   se produce una LazyInitializationException.
 end note

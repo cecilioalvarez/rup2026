@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.arquitecturajava.mapper.CursoMapper;
 import com.arquitecturajava.mapper.ImparticionMapper;
+import com.arquitecturajava.mapper.ProfesorMapper;
 import com.arquitecturajava.servicios.CursoService;
 import com.arquitecturajava.servicios.ImparticionService;
+import com.arquitecturajava.servicios.ProfesorService;
 import com.arquitecturajava.viewmodels.ImparticionViewModel;
 
 import jakarta.validation.Valid;
@@ -23,10 +25,13 @@ public class ImparticionController {
 
 	private final ImparticionService imparticionService;
 	private final CursoService cursoService;
+	private final ProfesorService profesorService;
 
-	public ImparticionController(ImparticionService imparticionService, CursoService cursoService) {
+	public ImparticionController(ImparticionService imparticionService, CursoService cursoService,
+			ProfesorService profesorService) {
 		this.imparticionService = imparticionService;
 		this.cursoService = cursoService;
+		this.profesorService = profesorService;
 	}
 
 	@GetMapping
@@ -51,7 +56,7 @@ public class ImparticionController {
 		if (resultado.hasErrors()) {
 			return mostrarFormulario(cursoId, null, model);
 		}
-		imparticionService.insertar(cursoId, ImparticionMapper.toImparticion(imparticion));
+		imparticionService.insertar(cursoId, imparticion.idProfesor(), ImparticionMapper.toImparticion(imparticion));
 		return "redirect:/cursos/" + cursoId + "/imparticiones";
 	}
 
@@ -69,7 +74,8 @@ public class ImparticionController {
 		if (resultado.hasErrors()) {
 			return mostrarFormulario(cursoId, id, model);
 		}
-		imparticionService.actualizar(cursoId, id, ImparticionMapper.toImparticion(imparticion));
+		imparticionService.actualizar(cursoId, id, imparticion.idProfesor(),
+				ImparticionMapper.toImparticion(imparticion));
 		return "redirect:/cursos/" + cursoId + "/imparticiones";
 	}
 
@@ -89,6 +95,7 @@ public class ImparticionController {
 	private String mostrarFormulario(Long cursoId, Long idImparticion, Model model) {
 		model.addAttribute("curso", CursoMapper.toViewModel(cursoService.buscarPorId(cursoId)));
 		model.addAttribute("idImparticion", idImparticion);
+		model.addAttribute("profesores", ProfesorMapper.toViewModel(profesorService.buscarTodos()));
 		return "imparticiones/formulario";
 	}
 
