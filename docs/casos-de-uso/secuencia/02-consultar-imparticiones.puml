@@ -1,0 +1,55 @@
+@startuml 02-consultar-imparticiones
+title Caso de uso: Consultar imparticiones de un curso
+
+autonumber
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor "Gestor" as usuario
+box "Navegador" #F2F2F2
+  participant "imparticiones/listado.html\n(Thymeleaf)" as vista
+end box
+box "presentacion" #DDEBF7
+  participant ImparticionController as controller
+  participant ManejadorErrores as errores
+end box
+box "mapper" #E2F0D9
+  participant "CursoMapper\nImparticionMapper" as mapper
+end box
+box "servicios" #FFF2CC
+  participant CursoService as cursoService
+  participant ImparticionService as service
+end box
+box "persistencia" #FCE4D6
+  participant CursoRepository as cursoRepo
+  participant ImparticionRepository as imparticionRepo
+end box
+database H2
+
+usuario -> vista : en el listado de cursos pulsa\n"Imparticiones" de un curso
+vista -> controller : GET /cursos/{cursoId}/imparticiones
+controller -> cursoService : buscarPorId(cursoId)
+cursoService -> cursoRepo : findById(cursoId)
+cursoRepo -> H2 : SELECT curso
+
+alt el curso no existe
+  cursoService --> controller : CursoNoEncontradoException
+  controller -> errores : @ExceptionHandler
+  errores --> vista : 404 "No existe el curso con id ..."
+else el curso existe
+  cursoService --> controller : Curso
+  controller -> service : buscarPorCurso(cursoId)
+  service -> imparticionRepo : findByCursoIdOrderByFechaInicioAsc(cursoId)
+  imparticionRepo -> H2 : SELECT imparticion JOIN profesor
+  note right of imparticionRepo
+    @EntityGraph("profesor"): el profesor
+    llega en la misma consulta (sin N+1)
+  end note
+  service --> controller : List<Imparticion>
+  controller -> mapper : toViewModel(curso)\ntoViewModel(imparticiones)
+  mapper --> controller : CursoViewModel,\nList<ImparticionViewModel>\n(con el nombre completo del profesor)
+  controller --> vista : "imparticiones/listado"
+  vista --> usuario : tabla con nombre, profesor y fechas
+end
+
+@enduml

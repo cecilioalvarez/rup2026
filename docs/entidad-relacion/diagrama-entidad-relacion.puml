@@ -1,0 +1,92 @@
+@startuml diagrama-entidad-relacion
+title Diagrama entidad-relación completo - applicacion (H2)
+
+skinparam linetype ortho
+hide circle
+hide empty members
+
+' Esquema que genera Hibernate a partir de las entidades del paquete negocio
+' (comprobado con el DDL real: logging.level.org.hibernate.SQL=DEBUG)
+
+entity "curso_nivel" as curso_nivel {
+  * id : BIGINT <<PK>> <<IDENTITY>>
+  --
+  nombre : VARCHAR(255)
+  * orden : INTEGER
+}
+
+entity "curso" as curso {
+  * id : BIGINT <<PK>> <<IDENTITY>>
+  --
+  titulo : VARCHAR(255)
+  autor : VARCHAR(255)
+  * duracion : INTEGER <<CHECK duracion <= 200>>
+  id_nivel : BIGINT <<FK curso_nivel>>
+}
+
+entity "imparticion" as imparticion {
+  * id : BIGINT <<PK>> <<IDENTITY>>
+  --
+  nombre : VARCHAR(255)
+  fecha_inicio : DATE
+  fecha_fin : DATE
+  curso_id : BIGINT <<FK curso>>
+  * profesor_id : BIGINT <<FK profesor>>
+}
+
+entity "profesor" as profesor {
+  * id : BIGINT <<PK>> <<IDENTITY>>
+  --
+  dni : VARCHAR(255) <<UNIQUE>>
+  nombre : VARCHAR(255)
+  apellidos : VARCHAR(255)
+}
+
+entity "matricula" as matricula {
+  * id : BIGINT <<PK>> <<IDENTITY>>
+  --
+  fecha : DATE
+  * alumno_id : BIGINT <<FK alumno>>
+  * imparticion_id : BIGINT <<FK imparticion>>
+  ..
+  <<UNIQUE (alumno_id, imparticion_id)>>
+}
+
+entity "alumno" as alumno {
+  * id : BIGINT <<PK>> <<IDENTITY>>
+  --
+  dni : VARCHAR(255) <<UNIQUE>>
+  nombre : VARCHAR(255)
+  apellidos : VARCHAR(255)
+  email : VARCHAR(255)
+}
+
+' |o = la FK admite NULL (cero o uno) ; || = la FK es NOT NULL (exactamente uno)
+curso_nivel |o--o{ curso : "id_nivel → id"
+curso |o--o{ imparticion : "curso_id → id"
+profesor ||--o{ imparticion : "profesor_id → id"
+imparticion ||--o{ matricula : "imparticion_id → id"
+alumno ||--o{ matricula : "alumno_id → id"
+
+note right of matricula
+  <b>Matrícula</b>: tabla que une alumno e
+  impartición (relación N a M con datos
+  propios: la fecha). Un alumno solo puede
+  matricularse una vez en cada impartición.
+end note
+
+note bottom of imparticion
+  <b>Borrados</b>
+  Ninguna FK tiene ON DELETE CASCADE: las cascadas las aplica JPA.
+  • Borrar un curso borra sus imparticiones y, con ellas, sus matrículas.
+  • Un profesor con imparticiones o un alumno con matrículas no se
+    pueden borrar (lo impide el servicio con una excepción de negocio).
+end note
+
+legend right
+  * = NOT NULL
+  PK = clave primaria, FK = clave ajena
+  IDENTITY = valor generado por la base de datos
+end legend
+
+@enduml

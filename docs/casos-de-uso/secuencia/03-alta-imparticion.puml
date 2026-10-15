@@ -1,0 +1,63 @@
+@startuml 03-alta-imparticion
+title Caso de uso: Alta de impartición en un curso
+
+autonumber
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor "Gestor" as usuario
+box "Navegador" #F2F2F2
+  participant "imparticiones/formulario.html\n(Thymeleaf)" as vista
+end box
+box "presentacion" #DDEBF7
+  participant ImparticionController as controller
+end box
+box "mapper" #E2F0D9
+  participant ImparticionMapper as mapper
+end box
+box "servicios" #FFF2CC
+  participant ProfesorService as profesorService
+  participant ImparticionService as service
+end box
+box "persistencia" #FCE4D6
+  participant CursoRepository as cursoRepo
+  participant ProfesorRepository as profesorRepo
+  participant ImparticionRepository as imparticionRepo
+end box
+database H2
+
+== Mostrar el formulario ==
+usuario -> vista : en las imparticiones del curso\npulsa "Nueva impartición"
+vista -> controller : GET /cursos/{cursoId}/imparticiones/nueva
+controller -> profesorService : buscarTodos()
+profesorService -> profesorRepo : findAllByOrderByApellidosAscNombreAsc()
+controller --> vista : "imparticiones/formulario"\n(ImparticionViewModel.vacia(), curso, profesores)
+
+== Guardar ==
+usuario -> vista : nombre, fechas, elige profesor\ny pulsa "Guardar"
+vista -> controller : POST /cursos/{cursoId}/imparticiones
+note right of controller
+  @Valid: nombre, fechas e idProfesor obligatorios
+  validarFechas(): fin no anterior a inicio
+end note
+
+alt hay errores
+  controller --> vista : "imparticiones/formulario" con los errores
+else datos válidos
+  controller -> mapper : toImparticion(viewModel)
+  mapper --> controller : Imparticion (sin curso ni profesor)
+  controller -> service : insertar(cursoId, idProfesor, imparticion)
+  service -> cursoRepo : findById(cursoId)
+  service -> profesorRepo : findById(idProfesor)
+  note right of service
+    curso.addImparticion(imparticion)
+    profesor.addImparticion(imparticion)
+    enlazan los dos lados de cada relación
+  end note
+  service -> imparticionRepo : save(imparticion)
+  imparticionRepo -> H2 : INSERT INTO imparticion\n(curso_id, profesor_id, ...)
+  service --> controller : Imparticion guardada
+  controller --> vista : redirect:/cursos/{cursoId}/imparticiones
+end
+
+@enduml

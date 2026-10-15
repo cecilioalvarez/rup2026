@@ -1,0 +1,59 @@
+@startuml 01-alta-curso
+title Caso de uso: Alta de curso
+
+autonumber
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor "Gestor" as usuario
+box "Navegador" #F2F2F2
+  participant "cursos/formulario.html\n(Thymeleaf)" as vista
+end box
+box "presentacion" #DDEBF7
+  participant CursoController as controller
+end box
+box "mapper" #E2F0D9
+  participant CursoMapper as mapper
+end box
+box "servicios" #FFF2CC
+  participant CursoService as service
+end box
+box "persistencia" #FCE4D6
+  participant CursoNivelRepository as nivelRepo
+  participant CursoRepository as cursoRepo
+end box
+database H2
+
+== Mostrar el formulario ==
+usuario -> vista : pulsa "Nuevo curso"
+vista -> controller : GET /cursos/nuevo
+controller -> service : getNiveles()
+service -> nivelRepo : findAllByOrderByOrdenAsc()
+nivelRepo -> H2 : SELECT curso_nivel
+service --> controller : List<CursoNivel>
+controller --> vista : "cursos/formulario"\n(CursoViewModel.vacio(), niveles)
+
+== Guardar ==
+usuario -> vista : rellena título, autor, duración, nivel\ny pulsa "Guardar"
+vista -> controller : POST /cursos
+note right of controller
+  Spring construye el CursoViewModel
+  y lo valida con @Valid (@Max(200))
+end note
+
+alt hay errores de validación
+  controller --> vista : "cursos/formulario" con los errores\n(se vuelven a cargar los niveles)
+else datos válidos
+  controller -> mapper : toCurso(cursoViewModel)
+  mapper --> controller : Curso\n(nivel = CursoNivel solo con su id)
+  controller -> service : insertar(curso)
+  note right of service : setId(null): un alta nunca\nsobrescribe un curso existente
+  service -> cursoRepo : save(curso)
+  cursoRepo -> H2 : INSERT INTO curso
+  service --> controller : Curso guardado
+  controller --> vista : redirect:/cursos
+  vista -> controller : GET /cursos
+  controller --> vista : "cursos/listado" con el curso nuevo
+end
+
+@enduml

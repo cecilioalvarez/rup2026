@@ -1,0 +1,53 @@
+@startuml 05-borrar-profesor
+title Caso de uso: Borrar profesor
+
+autonumber
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor "Gestor" as usuario
+box "Navegador" #F2F2F2
+  participant "profesores/listado.html\n(Thymeleaf)" as vista
+end box
+box "presentacion" #DDEBF7
+  participant ProfesorController as controller
+end box
+box "servicios" #FFF2CC
+  participant ProfesorService as service
+end box
+box "persistencia" #FCE4D6
+  participant ProfesorRepository as profesorRepo
+end box
+database H2
+
+usuario -> vista : pulsa "Borrar" en la fila del profesor
+vista -> usuario : confirm("¿Seguro que quieres borrar este profesor?")
+usuario -> vista : Aceptar
+vista -> controller : POST /profesores/{id}/borrar
+controller -> service : borrar(id)
+service -> profesorRepo : findById(id)
+profesorRepo -> H2 : SELECT profesor
+
+alt el profesor tiene imparticiones
+  note right of service
+    profesor.getImparticiones() no está vacía:
+    la FK imparticion.profesor_id impediría el borrado
+  end note
+  service --> controller : ProfesorConImparticionesException
+  controller -> controller : redirectAttributes.addFlashAttribute("error", mensaje)
+else no tiene imparticiones
+  service -> profesorRepo : delete(profesor)
+  profesorRepo -> H2 : DELETE FROM profesor
+end
+
+controller --> vista : redirect:/profesores
+vista -> controller : GET /profesores
+controller --> vista : "profesores/listado"
+vista --> usuario : listado actualizado o alerta roja\n"No se puede borrar a ... porque tiene imparticiones asignadas"
+
+note over usuario, H2
+  El borrado de un alumno con matrículas sigue el mismo esquema
+  (AlumnoService + AlumnoConMatriculasException).
+end note
+
+@enduml

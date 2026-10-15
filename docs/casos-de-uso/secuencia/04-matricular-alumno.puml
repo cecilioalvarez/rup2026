@@ -1,0 +1,66 @@
+@startuml 04-matricular-alumno
+title Caso de uso: Matricular alumno en una impartición
+
+autonumber
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor "Gestor" as usuario
+box "Navegador" #F2F2F2
+  participant "matriculas/listado.html\n(Thymeleaf)" as vista
+end box
+box "presentacion" #DDEBF7
+  participant MatriculaController as controller
+end box
+box "mapper" #E2F0D9
+  participant MatriculaMapper as mapper
+end box
+box "servicios" #FFF2CC
+  participant MatriculaService as service
+end box
+box "persistencia" #FCE4D6
+  participant ImparticionRepository as imparticionRepo
+  participant AlumnoRepository as alumnoRepo
+  participant MatriculaRepository as matriculaRepo
+end box
+database H2
+
+note over vista
+  La misma página muestra los matriculados
+  y el formulario "Nueva matrícula"
+  (alumno + fecha, por defecto hoy)
+end note
+
+usuario -> vista : elige alumno y fecha,\npulsa "Matricular"
+vista -> controller : POST /cursos/{cursoId}/imparticiones/{imparticionId}/matriculas
+note right of controller : @Valid: idAlumno y fecha obligatorios
+
+alt faltan datos
+  controller --> vista : "matriculas/listado" con los errores
+else datos válidos
+  controller -> mapper : toMatricula(viewModel)
+  mapper --> controller : Matricula (id, fecha)
+  controller -> service : matricular(cursoId, imparticionId, idAlumno, matricula)
+  service -> imparticionRepo : findByIdAndCursoId(imparticionId, cursoId)
+  note right of imparticionRepo : la impartición debe ser de ese curso;\nsi no, ImparticionNoEncontradaException (404)
+  service -> alumnoRepo : findById(idAlumno)
+  service -> matriculaRepo : existsByAlumnoIdAndImparticionId(...)
+
+  alt el alumno ya está matriculado
+    service --> controller : AlumnoYaMatriculadoException
+    controller --> vista : rejectValue("idAlumno"):\n"... ya está matriculado en esta impartición"
+  else no estaba matriculado
+    note right of service
+      imparticion.addMatricula(matricula)
+      alumno.addMatricula(matricula)
+    end note
+    service -> matriculaRepo : save(matricula)
+    matriculaRepo -> H2 : INSERT INTO matricula\n(UNIQUE alumno_id + imparticion_id)
+    service --> controller : Matricula guardada
+    controller --> vista : redirect:.../matriculas
+    vista -> controller : GET .../matriculas
+    controller --> vista : listado con el alumno matriculado
+  end
+end
+
+@enduml

@@ -1,0 +1,67 @@
+@startuml diagrama-casos-de-uso-cursos
+title Casos de uso - Cursos
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor<<fundamental>> #DDEBF7
+  BorderColor<<fundamental>> #2F5597
+}
+
+' Detalle de la gestión de cursos (pantallas /cursos, /cursos/nuevo y /cursos/{id}/editar).
+' La visión general de toda la aplicación está en diagrama-casos-de-uso.puml
+
+actor "Gestor de formación" as gestor
+
+rectangle "Cursos" {
+  usecase "Consultar listado\nde cursos" as UC_Listar
+  usecase "Buscar cursos" as UC_Buscar
+  usecase "Buscar por título" as UC_BuscarTitulo
+  usecase "Buscar por autor" as UC_BuscarAutor
+  usecase "Buscar por nivel" as UC_BuscarNivel
+
+  usecase "Alta de curso" as UC_Alta <<fundamental>>
+  usecase "Editar curso" as UC_Editar
+  usecase "Borrar curso" as UC_Borrar
+
+  usecase "Elegir nivel\n(Básico, Intermedio, Avanzado)" as UC_ElegirNivel
+  usecase "Validar datos\n(duración ≤ 200 horas)" as UC_Validar
+  usecase "Confirmar borrado" as UC_Confirmar
+
+  usecase "Ir a las imparticiones\ndel curso" as UC_Imparticiones
+}
+
+gestor --> UC_Listar
+gestor --> UC_Alta
+gestor --> UC_Editar
+gestor --> UC_Borrar
+
+' la búsqueda es opcional sobre el listado; empieza por el texto escrito y no distingue mayúsculas
+UC_Buscar .> UC_Listar : <<extend>>
+UC_BuscarTitulo -up-|> UC_Buscar
+UC_BuscarAutor -up-|> UC_Buscar
+UC_BuscarNivel -up-|> UC_Buscar
+
+UC_Alta ..> UC_ElegirNivel : <<include>>
+UC_Alta ..> UC_Validar : <<include>>
+UC_Editar ..> UC_ElegirNivel : <<include>>
+UC_Editar ..> UC_Validar : <<include>>
+UC_Borrar ..> UC_Confirmar : <<include>>
+
+UC_Imparticiones .> UC_Listar : <<extend>>
+
+legend right
+  <b>Reglas</b>
+  • La búsqueda filtra por los cursos cuyo campo <b>empieza</b> por el texto
+    (sin distinguir mayúsculas); sin texto se muestran todos.
+  • La duración de un curso no puede superar las 200 horas.
+  • Borrar un curso borra también sus imparticiones
+    y las matrículas de estas.
+  • "Ir a las imparticiones" enlaza con los casos de uso
+    de Imparticiones del diagrama general.
+
+  En azul, el caso fundamental
+  (diagrama de secuencia: secuencia/01-alta-curso.puml)
+end legend
+
+@enduml

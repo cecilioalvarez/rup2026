@@ -1,0 +1,71 @@
+@startuml diagrama-paquetes
+title Diagrama de paquetes - applicacion
+
+skinparam packageStyle folder
+hide empty members
+set separator none
+allowmixing
+
+' Dependencias obtenidas de los imports reales entre paquetes (una flecha = "usa a")
+
+package "com.arquitecturajava" as raiz {
+  component "ApplicacionApplication\n<<@SpringBootApplication>>" as app
+
+  package "presentacion" as presentacion {
+    rectangle "CursoController\nImparticionController\nMatriculaController\nProfesorController\nAlumnoController\nInicioController\nManejadorErrores" as pres_clases
+  }
+
+  package "viewmodels" as viewmodels {
+    rectangle "CursoViewModel\nImparticionViewModel\nMatriculaViewModel\nProfesorViewModel\nAlumnoViewModel" as vm_clases
+  }
+
+  package "mapper" as mapper {
+    rectangle "CursoMapper\nImparticionMapper\nMatriculaMapper\nProfesorMapper\nAlumnoMapper" as map_clases
+  }
+
+  package "servicios" as servicios {
+    rectangle "CursoService\nImparticionService\nMatriculaService\nProfesorService\nAlumnoService\n+ excepciones de negocio" as serv_clases
+  }
+
+  package "persistencia" as persistencia {
+    rectangle "CursoRepository\nCursoNivelRepository\nImparticionRepository\nMatriculaRepository\nProfesorRepository\nAlumnoRepository" as pers_clases
+  }
+
+  package "negocio" as negocio {
+    rectangle "Curso\nCursoNivel\nImparticion\nProfesor\nAlumno\nMatricula" as neg_clases
+  }
+}
+
+package "src/main/resources/templates" as templates {
+  rectangle "cursos/  imparticiones/  matriculas/\nprofesores/  alumnos/  fragmentos/menu.html\nindex.html" as plantillas
+}
+
+presentacion -down-> servicios : llama a
+presentacion -left-> mapper : convierte con
+presentacion -down-> viewmodels : recibe y envía
+presentacion .up.> templates : devuelve el nombre de la vista
+mapper -down-> negocio
+mapper -left-> viewmodels
+servicios -down-> persistencia : usa
+servicios -down-> negocio
+persistencia -down-> negocio : gestiona
+
+note right of presentacion
+  <b>presentacion</b> no depende de <b>negocio</b>:
+  los controllers solo ven ViewModels y
+  los mappers hacen la conversión.
+end note
+
+note right of negocio
+  <b>negocio</b> y <b>viewmodels</b> no dependen de
+  ningún otro paquete de la aplicación
+  (solo de JPA y Bean Validation).
+end note
+
+note left of servicios
+  Única capa con @Transactional y reglas
+  de negocio; las excepciones "no encontrado"
+  se convierten en 404 en ManejadorErrores.
+end note
+
+@enduml

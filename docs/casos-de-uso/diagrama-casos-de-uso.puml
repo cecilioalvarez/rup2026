@@ -1,0 +1,83 @@
+@startuml diagrama-casos-de-uso
+title Casos de uso - applicacion
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor<<fundamental>> #DDEBF7
+  BorderColor<<fundamental>> #2F5597
+}
+
+' La aplicación no tiene usuarios ni roles: un único actor gestiona todo.
+' Los casos <<fundamental>> tienen su diagrama de secuencia en casos-de-uso/secuencia/
+
+actor "Gestor de formación" as gestor
+
+rectangle "applicacion" {
+  package "Cursos" {
+    usecase "Buscar cursos\n(título, autor o nivel)" as UC_BuscarCursos
+    usecase "Alta de curso" as UC_AltaCurso <<fundamental>>
+    usecase "Editar curso" as UC_EditarCurso
+    usecase "Borrar curso" as UC_BorrarCurso
+  }
+
+  package "Imparticiones" {
+    usecase "Consultar imparticiones\nde un curso" as UC_ListarImparticiones <<fundamental>>
+    usecase "Alta de impartición" as UC_AltaImparticion <<fundamental>>
+    usecase "Editar impartición\n(cambiar profesor o fechas)" as UC_EditarImparticion
+    usecase "Borrar impartición" as UC_BorrarImparticion
+    usecase "Elegir profesor" as UC_ElegirProfesor
+  }
+
+  package "Matrículas" {
+    usecase "Matricular alumno\nen una impartición" as UC_Matricular <<fundamental>>
+    usecase "Anular matrícula" as UC_AnularMatricula
+    usecase "Consultar matrículas\nde un alumno" as UC_MatriculasAlumno
+  }
+
+  package "Profesores" {
+    usecase "Buscar profesores\n(nombre o apellidos)" as UC_BuscarProfesores
+    usecase "Alta / edición de profesor" as UC_AltaProfesor
+    usecase "Borrar profesor" as UC_BorrarProfesor <<fundamental>>
+  }
+
+  package "Alumnos" {
+    usecase "Alta / edición de alumno" as UC_AltaAlumno
+    usecase "Borrar alumno" as UC_BorrarAlumno
+  }
+}
+
+gestor --> UC_BuscarCursos
+gestor --> UC_AltaCurso
+gestor --> UC_EditarCurso
+gestor --> UC_BorrarCurso
+gestor --> UC_ListarImparticiones
+gestor --> UC_AltaImparticion
+gestor --> UC_EditarImparticion
+gestor --> UC_BorrarImparticion
+gestor --> UC_Matricular
+gestor --> UC_AnularMatricula
+gestor --> UC_MatriculasAlumno
+gestor --> UC_BuscarProfesores
+gestor --> UC_AltaProfesor
+gestor --> UC_BorrarProfesor
+gestor --> UC_AltaAlumno
+gestor --> UC_BorrarAlumno
+
+UC_AltaImparticion ..> UC_ElegirProfesor : <<include>>
+UC_EditarImparticion ..> UC_ElegirProfesor : <<include>>
+UC_AltaImparticion ..> UC_ListarImparticiones : <<include>>\nse hace desde el curso
+UC_Matricular ..> UC_ListarImparticiones : <<include>>\nse elige la impartición
+
+legend right
+  <b>Reglas de negocio</b>
+  • Borrar curso: borra también sus imparticiones y las matrículas de estas.
+  • Borrar profesor: no se permite si tiene imparticiones.
+  • Borrar alumno: no se permite si tiene matrículas.
+  • Matricular: un alumno solo una vez en cada impartición.
+
+  En azul, los casos de uso fundamentales
+  (tienen diagrama de secuencia en secuencia/)
+end legend
+
+@enduml

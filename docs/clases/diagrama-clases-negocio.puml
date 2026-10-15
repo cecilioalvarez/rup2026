@@ -1,5 +1,5 @@
-@startuml diagrama-clases
-title Diagrama de clases - applicacion (negocio)
+@startuml diagrama-clases-negocio
+title Diagrama de clases de negocio - applicacion
 
 scale 0.8
 
