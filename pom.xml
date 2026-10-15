@@ -57,6 +57,12 @@
 			<artifactId>spring-boot-starter-webmvc-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- Selenium WebDriver para tests de extremo a extremo; versión gestionada por Spring Boot -->
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
