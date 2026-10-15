@@ -51,6 +51,21 @@ class ProfesorControllerIntegracionTest {
 	}
 
 	@Test
+	void listarFiltraPorNombreSinDistinguirMayusculas() throws Exception {
+		assertEquals(List.of("Peña López"), apellidosListados("NOMBRE", "an"));
+	}
+
+	@Test
+	void listarFiltraPorApellidos() throws Exception {
+		assertEquals(List.of("Martín García"), apellidosListados("APELLIDOS", "garcía"));
+	}
+
+	@Test
+	void listarConTextoVacioDevuelveTodos() throws Exception {
+		assertEquals(List.of("Martín García", "Peña López"), apellidosListados("APELLIDOS", "  "));
+	}
+
+	@Test
 	void insertarGuardaElProfesorYRedirigeAlListado() throws Exception {
 		mockMvc.perform(post("/profesores")
 				.param("dni", "11111111H")
@@ -116,6 +131,18 @@ class ProfesorControllerIntegracionTest {
 				.andExpect(redirectedUrl("/profesores"));
 
 		assertFalse(profesorRepository.existsById(id));
+	}
+
+	private List<String> apellidosListados(String campo, String texto) throws Exception {
+		MvcResult resultado = mockMvc.perform(get("/profesores").param("campo", campo).param("texto", texto))
+				.andExpect(status().isOk())
+				.andExpect(view().name("profesores/listado"))
+				.andReturn();
+
+		@SuppressWarnings("unchecked")
+		List<ProfesorViewModel> profesores = (List<ProfesorViewModel>) resultado.getModelAndView().getModel()
+				.get("profesores");
+		return profesores.stream().map(ProfesorViewModel::apellidos).toList();
 	}
 
 }

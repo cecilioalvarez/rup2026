@@ -15,6 +15,26 @@
 			<a class="btn btn-primary" th:href="@{/profesores/nuevo}" href="formulario.html">Nuevo profesor</a>
 		</div>
 
+		<form class="row g-2 mb-4" method="get" th:action="@{/profesores}" role="search">
+			<div class="col-sm-3">
+				<label class="visually-hidden" for="campo">Buscar por</label>
+				<select class="form-select" id="campo" name="campo">
+					<option th:each="c : ${campos}" th:value="${c}" th:text="${c.etiqueta}"
+						th:selected="${c == campo}">Nombre</option>
+				</select>
+			</div>
+			<div class="col-sm">
+				<label class="visually-hidden" for="texto">Texto a buscar</label>
+				<input class="form-control" type="search" id="texto" name="texto" th:value="${texto}"
+					placeholder="Texto a buscar">
+			</div>
+			<div class="col-sm-auto">
+				<button class="btn btn-outline-primary" type="submit">Buscar</button>
+				<a class="btn btn-outline-secondary" th:href="@{/profesores}" th:if="${not #strings.isEmpty(texto)}"
+					href="listado.html">Limpiar</a>
+			</div>
+		</form>
+
 		<div class="table-responsive" th:if="${not #lists.isEmpty(profesores)}">
 			<table class="table table-striped table-hover align-middle">
 				<thead class="table-light">
@@ -43,7 +63,9 @@
 			</table>
 		</div>
 
-		<div class="alert alert-info" th:if="${#lists.isEmpty(profesores)}">No hay profesores disponibles.</div>
+		<div class="alert alert-info" th:if="${#lists.isEmpty(profesores)}"
+			th:text="${#strings.isEmpty(texto)} ? 'No hay profesores disponibles.' : 'No hay profesores que coincidan con la búsqueda.'">
+			No hay profesores disponibles.</div>
 	</div>
 
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

@@ -24,6 +24,19 @@ public class ProfesorService {
 	}
 
 	@Transactional(readOnly = true)
+	public List<Profesor> buscar(CampoBusquedaProfesor campo, String texto) {
+		// sin texto no hay filtro: se devuelve el listado completo
+		if (campo == null || texto == null || texto.isBlank()) {
+			return buscarTodos();
+		}
+		String filtro = texto.strip();
+		return switch (campo) {
+			case NOMBRE -> profesorRepository.findByNombreContainingIgnoreCaseOrderByApellidosAscNombreAsc(filtro);
+			case APELLIDOS -> profesorRepository.findByApellidosContainingIgnoreCaseOrderByApellidosAscNombreAsc(filtro);
+		};
+	}
+
+	@Transactional(readOnly = true)
 	public Profesor buscarPorId(Long id) {
 		return profesorRepository.findById(id).orElseThrow(() -> new ProfesorNoEncontradoException(id));
 	}

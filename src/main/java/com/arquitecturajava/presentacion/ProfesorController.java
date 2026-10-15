@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.arquitecturajava.mapper.ProfesorMapper;
+import com.arquitecturajava.servicios.CampoBusquedaProfesor;
 import com.arquitecturajava.servicios.DniDuplicadoException;
 import com.arquitecturajava.servicios.ProfesorService;
 import com.arquitecturajava.viewmodels.ProfesorViewModel;
@@ -27,8 +29,12 @@ public class ProfesorController {
 	}
 
 	@GetMapping
-	public String listar(Model model) {
-		model.addAttribute("profesores", ProfesorMapper.toViewModel(profesorService.buscarTodos()));
+	public String listar(@RequestParam(defaultValue = "NOMBRE") CampoBusquedaProfesor campo,
+			@RequestParam(defaultValue = "") String texto, Model model) {
+		model.addAttribute("profesores", ProfesorMapper.toViewModel(profesorService.buscar(campo, texto)));
+		model.addAttribute("campos", CampoBusquedaProfesor.values());
+		model.addAttribute("campo", campo);
+		model.addAttribute("texto", texto);
 		return "profesores/listado";
 	}
 
