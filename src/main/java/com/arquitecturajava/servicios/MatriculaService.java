@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.arquitecturajava.negocio.Alumno;
 import com.arquitecturajava.negocio.Imparticion;
 import com.arquitecturajava.negocio.Matricula;
-import com.arquitecturajava.persistencia.AlumnoRepository;
-import com.arquitecturajava.persistencia.ImparticionRepository;
-import com.arquitecturajava.persistencia.MatriculaRepository;
+import com.arquitecturajava.repositories.AlumnoRepository;
+import com.arquitecturajava.repositories.ImparticionRepository;
+import com.arquitecturajava.repositories.MatriculaRepository;
 
 @Service
 @Transactional

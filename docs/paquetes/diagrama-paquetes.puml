@@ -11,7 +11,7 @@ allowmixing
 package "com.arquitecturajava" as raiz {
   component "ApplicacionApplication\n<<@SpringBootApplication>>" as app
 
-  package "presentacion" as presentacion {
+  package "controllers" as controllers {
     rectangle "CursoController\nImparticionController\nMatriculaController\nProfesorController\nAlumnoController\nInicioController\nManejadorErrores" as pres_clases
   }
 
@@ -27,7 +27,7 @@ package "com.arquitecturajava" as raiz {
     rectangle "CursoService\nImparticionService\nMatriculaService\nProfesorService\nAlumnoService\n+ excepciones de negocio" as serv_clases
   }
 
-  package "persistencia" as persistencia {
+  package "repositories" as repositories {
     rectangle "CursoRepository\nCursoNivelRepository\nImparticionRepository\nMatriculaRepository\nProfesorRepository\nAlumnoRepository" as pers_clases
   }
 
@@ -40,18 +40,18 @@ package "src/main/resources/templates" as templates {
   rectangle "cursos/  imparticiones/  matriculas/\nprofesores/  alumnos/  fragmentos/menu.html\nindex.html" as plantillas
 }
 
-presentacion -down-> servicios : llama a
-presentacion -left-> mapper : convierte con
-presentacion -down-> viewmodels : recibe y envía
-presentacion .up.> templates : devuelve el nombre de la vista
+controllers -down-> servicios : llama a
+controllers -left-> mapper : convierte con
+controllers -down-> viewmodels : recibe y envía
+controllers .up.> templates : devuelve el nombre de la vista
 mapper -down-> negocio
 mapper -left-> viewmodels
-servicios -down-> persistencia : usa
+servicios -down-> repositories : usa
 servicios -down-> negocio
-persistencia -down-> negocio : gestiona
+repositories -down-> negocio : gestiona
 
-note right of presentacion
-  <b>presentacion</b> no depende de <b>negocio</b>:
+note right of controllers
+  <b>controllers</b> no depende de <b>negocio</b>:
   los controllers solo ven ViewModels y
   los mappers hacen la conversión.
 end note

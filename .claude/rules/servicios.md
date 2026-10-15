@@ -17,5 +17,5 @@ paths:
 
 ## Validaciones y errores
 - Las reglas de negocio se comprueban en el servicio aunque el formulario ya las valide (fechas coherentes, DNI duplicado, alumno ya matriculado).
-- Excepciones "no encontrado" → **404** mediante un `@ExceptionHandler` en `presentacion/ManejadorErrores`; al crear una nueva, registrarla allí.
+- Excepciones "no encontrado" → **404** mediante un `@ExceptionHandler` en `controllers/ManejadorErrores`; al crear una nueva, registrarla allí.
 - Excepciones de negocio (`DniDuplicadoException`, `AlumnoYaMatriculadoException`, `...ConImparticiones/ConMatriculasException`) las captura el controller para mostrarlas en la vista.

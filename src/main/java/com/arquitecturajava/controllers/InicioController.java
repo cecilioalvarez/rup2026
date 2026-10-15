@@ -1,4 +1,4 @@
-package com.arquitecturajava.presentacion;
+package com.arquitecturajava.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

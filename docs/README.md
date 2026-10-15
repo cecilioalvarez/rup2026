@@ -39,10 +39,10 @@ Los diagramas de secuencia agrupan los participantes por capa con el mismo color
 | Capa | Color | Participantes |
 |---|---|---|
 | Navegador | gris | plantilla Thymeleaf |
-| `presentacion` | azul | controllers y `ManejadorErrores` |
+| `controllers` | azul | controllers y `ManejadorErrores` |
 | `mapper` | verde | conversión entidad ↔ ViewModel |
 | `servicios` | amarillo | reglas de negocio y transacciones |
-| `persistencia` | naranja | repositorios Spring Data |
+| `repositories` | naranja | repositorios Spring Data |
 
 | Caso de uso | Qué enseña |
 |---|---|
@@ -53,7 +53,7 @@ Los diagramas de secuencia agrupan los participantes por capa con el mismo color
 | Borrar profesor | borrado bloqueado con excepción de negocio y mensaje flash en el listado |
 
 ### Paquetes
-`presentacion → servicios → persistencia → negocio`, con `mapper` y `viewmodels` entre la presentación y el negocio: los controllers nunca usan entidades directamente.
+`controllers → servicios → repositories → negocio`, con `mapper` y `viewmodels` entre la presentación y el negocio: los controllers nunca usan entidades directamente.
 
 ### Entidad-relación
 Refleja el DDL que genera Hibernate. Las cascadas de borrado (curso → imparticiones → matrículas) las aplica JPA; ninguna FK tiene `ON DELETE CASCADE`.

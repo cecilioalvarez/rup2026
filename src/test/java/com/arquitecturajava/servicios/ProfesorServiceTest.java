@@ -17,7 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.arquitecturajava.negocio.Profesor;
-import com.arquitecturajava.persistencia.ProfesorRepository;
+import com.arquitecturajava.repositories.ProfesorRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ProfesorServiceTest {

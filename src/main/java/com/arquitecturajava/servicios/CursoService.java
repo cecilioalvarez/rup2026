@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.arquitecturajava.negocio.Curso;
 import com.arquitecturajava.negocio.CursoNivel;
-import com.arquitecturajava.persistencia.CursoNivelRepository;
-import com.arquitecturajava.persistencia.CursoRepository;
+import com.arquitecturajava.repositories.CursoNivelRepository;
+import com.arquitecturajava.repositories.CursoRepository;
 
 @Service
 @Transactional

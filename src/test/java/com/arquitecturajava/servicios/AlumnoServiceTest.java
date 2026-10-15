@@ -17,7 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.arquitecturajava.negocio.Alumno;
-import com.arquitecturajava.persistencia.AlumnoRepository;
+import com.arquitecturajava.repositories.AlumnoRepository;
 
 @ExtendWith(MockitoExtension.class)
 class AlumnoServiceTest {

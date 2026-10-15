@@ -9,7 +9,7 @@ actor "Gestor" as usuario
 box "Navegador" #F2F2F2
   participant "imparticiones/listado.html\n(Thymeleaf)" as vista
 end box
-box "presentacion" #DDEBF7
+box "controllers" #DDEBF7
   participant ImparticionController as controller
   participant ManejadorErrores as errores
 end box
@@ -20,7 +20,7 @@ box "servicios" #FFF2CC
   participant CursoService as cursoService
   participant ImparticionService as service
 end box
-box "persistencia" #FCE4D6
+box "repositories" #FCE4D6
   participant CursoRepository as cursoRepo
   participant ImparticionRepository as imparticionRepo
 end box

@@ -9,7 +9,7 @@ actor "Gestor" as usuario
 box "Navegador" #F2F2F2
   participant "cursos/formulario.html\n(Thymeleaf)" as vista
 end box
-box "presentacion" #DDEBF7
+box "controllers" #DDEBF7
   participant CursoController as controller
 end box
 box "mapper" #E2F0D9
@@ -18,7 +18,7 @@ end box
 box "servicios" #FFF2CC
   participant CursoService as service
 end box
-box "persistencia" #FCE4D6
+box "repositories" #FCE4D6
   participant CursoNivelRepository as nivelRepo
   participant CursoRepository as cursoRepo
 end box

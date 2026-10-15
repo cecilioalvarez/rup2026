@@ -21,7 +21,7 @@ paths:
 
 ## Convenciones
 - Títulos y notas en español; `@startuml <nombre-del-fichero>`.
-- Secuencia: `autonumber`, participantes agrupados con `box` por capa y siempre los mismos colores (Navegador gris `#F2F2F2`, presentacion azul `#DDEBF7`, mapper verde `#E2F0D9`, servicios amarillo `#FFF2CC`, persistencia naranja `#FCE4D6`), `alt/else` para los caminos de error, nombres de métodos reales.
+- Secuencia: `autonumber`, participantes agrupados con `box` por capa y siempre los mismos colores (Navegador gris `#F2F2F2`, controllers azul `#DDEBF7`, mapper verde `#E2F0D9`, servicios amarillo `#FFF2CC`, repositories naranja `#FCE4D6`), `alt/else` para los caminos de error, nombres de métodos reales.
 - Las anotaciones JPA de cada relación van en **notas laterales** (`note left of` / `note right of`), no en `note on link`: con varias relaciones se solapan y no se leen.
 - En casos de uso, las reglas de negocio van en la `legend`, no en notas sueltas (quedan lejos y se cruzan las líneas).
 - Getters y setters se omiten.

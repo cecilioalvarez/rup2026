@@ -1,7 +1,7 @@
 ---
 paths:
   - "src/main/java/**/negocio/**"
-  - "src/main/java/**/persistencia/**"
+  - "src/main/java/**/repositories/**"
   - "src/main/resources/data.sql"
 ---
 

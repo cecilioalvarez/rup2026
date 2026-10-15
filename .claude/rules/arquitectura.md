@@ -1,7 +1,7 @@
 # Arquitectura en capas
 
 ## Flujo
-`Controller` (presentacion) → `Service` (servicios) → `Repository` (persistencia) → entidad (negocio)
+`Controller` (controllers) → `Service` (servicios) → `Repository` (repositories) → entidad (negocio)
 
 - El **controller** solo trabaja con **ViewModels**: recibe un ViewModel del formulario, lo convierte con el mapper y llama al servicio; lo que devuelve el servicio lo convierte otra vez a ViewModel para la vista.
 - Las **vistas nunca reciben entidades** JPA.

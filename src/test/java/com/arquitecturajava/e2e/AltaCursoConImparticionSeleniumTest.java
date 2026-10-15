@@ -19,7 +19,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 
 import com.arquitecturajava.e2e.paginas.ListadoCursosPagina;
 import com.arquitecturajava.e2e.paginas.ListadoImparticionesPagina;
-import com.arquitecturajava.persistencia.CursoRepository;
+import com.arquitecturajava.repositories.CursoRepository;
 
 // Test de extremo a extremo: arranca la aplicación en un puerto aleatorio, da de alta un curso
 // y después, desde ese curso, da de alta una impartición (Microsoft Edge con ventana visible).

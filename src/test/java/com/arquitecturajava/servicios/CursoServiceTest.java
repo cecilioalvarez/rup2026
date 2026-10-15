@@ -20,8 +20,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.arquitecturajava.negocio.Curso;
 import com.arquitecturajava.negocio.CursoNivel;
-import com.arquitecturajava.persistencia.CursoNivelRepository;
-import com.arquitecturajava.persistencia.CursoRepository;
+import com.arquitecturajava.repositories.CursoNivelRepository;
+import com.arquitecturajava.repositories.CursoRepository;
 
 @ExtendWith(MockitoExtension.class)
 class CursoServiceTest {

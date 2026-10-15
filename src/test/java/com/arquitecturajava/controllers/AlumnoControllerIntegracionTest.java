@@ -1,4 +1,4 @@
-package com.arquitecturajava.presentacion;
+package com.arquitecturajava.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.arquitecturajava.negocio.Alumno;
-import com.arquitecturajava.persistencia.AlumnoRepository;
+import com.arquitecturajava.repositories.AlumnoRepository;
 import com.arquitecturajava.viewmodels.AlumnoViewModel;
 import com.arquitecturajava.viewmodels.MatriculaViewModel;
 

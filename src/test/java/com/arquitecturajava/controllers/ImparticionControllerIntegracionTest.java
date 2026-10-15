@@ -1,4 +1,4 @@
-package com.arquitecturajava.presentacion;
+package com.arquitecturajava.controllers;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.arquitecturajava.negocio.Imparticion;
-import com.arquitecturajava.persistencia.ImparticionRepository;
+import com.arquitecturajava.repositories.ImparticionRepository;
 import com.arquitecturajava.viewmodels.ImparticionViewModel;
 
 // Controller, servicio y repositorio reales contra H2 con los datos de data.sql;

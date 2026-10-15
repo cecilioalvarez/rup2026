@@ -1,4 +1,4 @@
-package com.arquitecturajava.presentacion;
+package com.arquitecturajava.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.arquitecturajava.negocio.Curso;
-import com.arquitecturajava.persistencia.CursoRepository;
+import com.arquitecturajava.repositories.CursoRepository;
 import com.arquitecturajava.viewmodels.CursoViewModel;
 
 // Controller, servicio y repositorio reales contra H2 con los datos de data.sql;

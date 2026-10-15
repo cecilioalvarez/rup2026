@@ -1,6 +1,6 @@
 ---
 paths:
-  - "src/main/java/**/presentacion/**"
+  - "src/main/java/**/controllers/**"
   - "src/main/resources/templates/**"
 ---
 

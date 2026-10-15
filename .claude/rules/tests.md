@@ -20,7 +20,7 @@ Los tests replican el paquete de la clase probada:
 - `viewmodels/*ViewModelTest` — validación del record con `Validation.buildDefaultValidatorFactory()` (`@BeforeAll` / `@AfterAll`).
 - `mapper/*MapperTest` — conversiones en ambos sentidos, incluidos los casos con relaciones a `null`.
 - `servicios/*ServiceTest` — Mockito: `@ExtendWith(MockitoExtension.class)`, `@Mock` de cada repositorio, `@InjectMocks` del servicio; se comprueba también lo que **no** debe pasar (`verify(repo, never()).save(any())`).
-- `presentacion/*ControllerIntegracionTest` — controller + servicio + repositorio reales contra H2 y `data.sql`: `@SpringBootTest @AutoConfigureMockMvc @Transactional` (cada test se deshace al terminar); se usan `MockMvc`, `view().name(...)`, `model()...`, `redirectedUrl(...)`, `flash()...` y `status().isNotFound()`.
+- `controllers/*ControllerIntegracionTest` — controller + servicio + repositorio reales contra H2 y `data.sql`: `@SpringBootTest @AutoConfigureMockMvc @Transactional` (cada test se deshace al terminar); se usan `MockMvc`, `view().name(...)`, `model()...`, `redirectedUrl(...)`, `flash()...` y `status().isNotFound()`.
 
 ## Nombres
 Métodos en español que describen el comportamiento esperado, sin prefijo `test`:

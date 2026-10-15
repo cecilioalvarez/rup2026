@@ -23,11 +23,11 @@ import com.arquitecturajava.e2e.paginas.ListadoCursosPagina;
 import com.arquitecturajava.e2e.paginas.MatriculasPagina;
 import com.arquitecturajava.negocio.Curso;
 import com.arquitecturajava.negocio.Imparticion;
-import com.arquitecturajava.persistencia.AlumnoRepository;
-import com.arquitecturajava.persistencia.CursoNivelRepository;
-import com.arquitecturajava.persistencia.CursoRepository;
-import com.arquitecturajava.persistencia.ImparticionRepository;
-import com.arquitecturajava.persistencia.ProfesorRepository;
+import com.arquitecturajava.repositories.AlumnoRepository;
+import com.arquitecturajava.repositories.CursoNivelRepository;
+import com.arquitecturajava.repositories.CursoRepository;
+import com.arquitecturajava.repositories.ImparticionRepository;
+import com.arquitecturajava.repositories.ProfesorRepository;
 
 // Test de extremo a extremo: partiendo de un curso con una impartición activa, da de alta un alumno
 // nuevo y lo matricula en esa impartición desde el navegador (Microsoft Edge con ventana visible).

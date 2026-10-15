@@ -19,9 +19,9 @@ Aplicación web de gestión de formación: **cursos** (con nivel), sus **imparti
 
 ## Mapa del código (`com.arquitecturajava`)
 - `negocio` — entidades JPA (`Curso`, `CursoNivel`, `Imparticion`, `Profesor`, `Alumno`, `Matricula`)
-- `persistencia` — repositorios Spring Data
+- `repositories` — repositorios Spring Data
 - `servicios` — lógica de negocio, transacciones y excepciones de negocio
-- `presentacion` — controllers MVC, `InicioController` y `ManejadorErrores`
+- `controllers` — controllers MVC, `InicioController` y `ManejadorErrores`
 - `viewmodels` — records que usan las vistas y los formularios
 - `mapper` — conversión estática entidad ↔ ViewModel
 - `templates/<entidad>/listado.html|formulario.html`, menú común en `templates/fragmentos/menu.html`

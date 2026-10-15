@@ -9,7 +9,7 @@ actor "Gestor" as usuario
 box "Navegador" #F2F2F2
   participant "matriculas/listado.html\n(Thymeleaf)" as vista
 end box
-box "presentacion" #DDEBF7
+box "controllers" #DDEBF7
   participant MatriculaController as controller
 end box
 box "mapper" #E2F0D9
@@ -18,7 +18,7 @@ end box
 box "servicios" #FFF2CC
   participant MatriculaService as service
 end box
-box "persistencia" #FCE4D6
+box "repositories" #FCE4D6
   participant ImparticionRepository as imparticionRepo
   participant AlumnoRepository as alumnoRepo
   participant MatriculaRepository as matriculaRepo

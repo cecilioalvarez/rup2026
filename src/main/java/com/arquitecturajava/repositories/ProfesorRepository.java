@@ -1,4 +1,4 @@
-package com.arquitecturajava.persistencia;
+package com.arquitecturajava.repositories;
 
 import java.util.List;
 

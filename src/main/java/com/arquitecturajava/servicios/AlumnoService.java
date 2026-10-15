@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.arquitecturajava.negocio.Alumno;
-import com.arquitecturajava.persistencia.AlumnoRepository;
+import com.arquitecturajava.repositories.AlumnoRepository;
 
 @Service
 @Transactional
