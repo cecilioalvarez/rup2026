@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <body>
-	<!-- menú principal compartido: "activo" indica la sección marcada (cursos, profesores o vacío) -->
+	<!-- menú principal compartido: "activo" indica la sección marcada (cursos, profesores, alumnos o vacío) -->
 	<nav class="navbar navbar-expand-sm navbar-dark bg-primary" th:fragment="menu(activo)">
 		<div class="container">
 			<a class="navbar-brand" th:href="@{/}" href="../index.html">Formación</a>
@@ -20,6 +20,11 @@
 						<a class="nav-link" th:classappend="${activo == 'profesores'} ? 'active'"
 							th:attr="aria-current=${activo == 'profesores'} ? 'page'" th:href="@{/profesores}"
 							href="../profesores/listado.html">Profesores</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" th:classappend="${activo == 'alumnos'} ? 'active'"
+							th:attr="aria-current=${activo == 'alumnos'} ? 'page'" th:href="@{/alumnos}"
+							href="../alumnos/listado.html">Alumnos</a>
 					</li>
 				</ul>
 			</div>

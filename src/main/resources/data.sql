@@ -13,3 +13,6 @@ INSERT INTO imparticion (nombre, fecha_inicio, fecha_fin, curso_id) VALUES ('Thy
 
 INSERT INTO profesor (dni, nombre, apellidos) VALUES ('12345678Z', 'Laura', 'Martín García');
 INSERT INTO profesor (dni, nombre, apellidos) VALUES ('87654321X', 'Ana', 'Peña López');
+
+INSERT INTO alumno (dni, nombre, apellidos, email) VALUES ('11223344B', 'Carlos', 'Díaz Romero', 'carlos.diaz@example.com');
+INSERT INTO alumno (dni, nombre, apellidos, email) VALUES ('44332211C', 'Marta', 'Sánchez Gil', 'marta.sanchez@example.com');
