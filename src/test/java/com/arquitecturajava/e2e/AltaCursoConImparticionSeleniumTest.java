@@ -2,10 +2,12 @@ package com.arquitecturajava.e2e;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.edge.EdgeDriver;
@@ -16,23 +18,25 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 import com.arquitecturajava.e2e.paginas.ListadoCursosPagina;
+import com.arquitecturajava.e2e.paginas.ListadoImparticionesPagina;
 import com.arquitecturajava.persistencia.CursoRepository;
 
-// Test de extremo a extremo: arranca la aplicación en un puerto aleatorio y da de alta un curso
-// desde el navegador (Microsoft Edge con ventana visible). Selenium Manager descarga el msedgedriver
-// adecuado la primera vez que se ejecuta.
+// Test de extremo a extremo: arranca la aplicación en un puerto aleatorio, da de alta un curso
+// y después, desde ese curso, da de alta una impartición (Microsoft Edge con ventana visible).
 // Los detalles de cada pantalla (ids, selectores, pausas) están en los Page Objects de e2e.paginas.
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class AltaCursoSeleniumTest {
+@DisplayName("Alta de curso con impartición")
+class AltaCursoConImparticionSeleniumTest {
 
 	// título del curso que se crea en el test; sirve también para encontrarlo y borrarlo al final
-	private static final String TITULO = "Selenium WebDriver";
+	private static final String TITULO = "Selenium Avanzado";
+	private static final String IMPARTICION = "Selenium Avanzado - Mayo";
 
 	// puerto aleatorio en el que Spring Boot ha arrancado el servidor para este test
 	@LocalServerPort
 	private int puerto;
 
-	// acceso directo a la base de datos para comprobar y limpiar lo que hace el navegador
+	// acceso directo a la base de datos para limpiar lo que hace el navegador
 	@Autowired
 	private CursoRepository cursoRepository;
 
@@ -55,29 +59,39 @@ class AltaCursoSeleniumTest {
 			// quit() cierra la ventana y termina el proceso msedgedriver
 			driver.quit();
 		}
-		// el servidor real no deshace transacciones: se borra el curso creado para no afectar a otros tests
+		// al borrar el curso se borran también sus imparticiones (cascade = REMOVE en Curso)
 		cursoRepository.deleteAll(cursoRepository.findByTituloStartingWithIgnoreCase(TITULO));
 	}
 
 	@Test
-	void altaDeCursoDesdeElFormularioLoMuestraEnElListado() {
-		// 1. el usuario entra en el listado de cursos y pulsa "Nuevo curso"
-		ListadoCursosPagina listado = ListadoCursosPagina.navegarAListado(driver, puerto)
+	@DisplayName("el curso dado de alta recibe una impartición que aparece en su listado de imparticiones")
+	void altaDeCursoConImparticionLaMuestraEnElListadoDeImparticiones() {
+		// 1. el usuario da de alta el curso desde el listado de cursos
+		ListadoCursosPagina cursos = ListadoCursosPagina.navegarAListado(driver, puerto)
 				.navegarANuevoCurso()
-				// 2. rellena el formulario campo a campo
 				.conTitulo(TITULO)
 				.conAutor("Cecilio Álvarez")
-				.conDuracion(15)
-				.conNivel("Intermedio")
-				// 3. pulsa "Guardar" y la aplicación le devuelve al listado
+				.conDuracion(25)
+				.conNivel("Avanzado")
 				.navegarAListadoTrasGuardar();
 
-		// 4. comprobaciones: estamos en el listado...
-		assertEquals("Listado de cursos", listado.getCabecera());
-		// ...el curso nuevo aparece en la tabla con los datos escritos...
-		assertEquals(List.of(TITULO, "Cecilio Álvarez", "15", "Intermedio"), listado.filaDelCurso(TITULO));
-		// ...y se ha guardado una sola vez en la base de datos
-		assertEquals(1, cursoRepository.findByTituloStartingWithIgnoreCase(TITULO).size());
+		// 2. en la fila del curso nuevo pulsa "Imparticiones": entra en las imparticiones de ese curso
+		ListadoImparticionesPagina imparticiones = cursos.navegarAImparticiones(TITULO);
+		assertEquals("Imparticiones de " + TITULO, imparticiones.getCabecera());
+
+		// 3. pulsa "Nueva impartición", rellena el formulario y guarda
+		imparticiones = imparticiones.navegarANuevaImparticion()
+				.conNombre(IMPARTICION)
+				.conFechaInicio(LocalDate.of(2026, 5, 4))
+				.conFechaFin(LocalDate.of(2026, 5, 15))
+				.conProfesor("Laura Martín García")
+				.navegarAListadoTrasGuardar();
+
+		// 4. comprobaciones: seguimos en las imparticiones del curso nuevo...
+		assertEquals("Imparticiones de " + TITULO, imparticiones.getCabecera());
+		// ...y la impartición aparece con su profesor y sus fechas (en la tabla van con formato dd/MM/yyyy)
+		assertEquals(List.of(IMPARTICION, "Laura Martín García", "04/05/2026", "15/05/2026"),
+				imparticiones.filaDeImparticion(IMPARTICION));
 	}
 
 }

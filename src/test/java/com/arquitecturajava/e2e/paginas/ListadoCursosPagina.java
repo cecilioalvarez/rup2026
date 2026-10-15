@@ -48,12 +48,24 @@ public class ListadoCursosPagina extends Pagina {
 
 	// título, autor, duración y nivel del curso con ese título, tal y como se muestran en la tabla
 	public List<String> filaDelCurso(String titulo) {
-		// se busca la fila cuya segunda columna (Título) coincide
-		WebElement fila = filas.stream()
-				.filter(tr -> tr.findElement(By.cssSelector("td:nth-child(2)")).getText().equals(titulo))
-				.findFirst().orElseThrow(() -> new AssertionError("El curso " + titulo + " no aparece en el listado"));
+		WebElement fila = buscarFila(titulo);
 		// columnas de la tabla: Id, Título, Autor, Duración, Nivel, Acciones -> nos quedamos con las 4 centrales
 		return fila.findElements(By.tagName("td")).stream().map(WebElement::getText).toList().subList(1, 5);
+	}
+
+	// pulsa el botón "Imparticiones" de la fila del curso: el navegador pasa al listado de sus imparticiones
+	public ListadoImparticionesPagina navegarAImparticiones(String titulo) {
+		buscarFila(titulo).findElement(By.linkText("Imparticiones")).click();
+		ListadoImparticionesPagina imparticiones = new ListadoImparticionesPagina(driver);
+		pausa();
+		return imparticiones;
+	}
+
+	// se busca la fila cuya segunda columna (Título) coincide
+	private WebElement buscarFila(String titulo) {
+		return filas.stream()
+				.filter(tr -> tr.findElement(By.cssSelector("td:nth-child(2)")).getText().equals(titulo))
+				.findFirst().orElseThrow(() -> new AssertionError("El curso " + titulo + " no aparece en el listado"));
 	}
 
 }
